@@ -39,54 +39,54 @@ class updateTable extends Command
         // }
 
         // for each student taking a course create entries for assignment and activities 
-        $list = StudentCourse::all();
-        foreach ($list as $entry) {
-            $course = $entry->course;
-            $student = $entry->student;
+        // $list = StudentCourse::all();
+        // foreach ($list as $entry) {
+        //     $course = $entry->course;
+        //     $student = $entry->student;
 
-            // create student activity data
-            $activities = Activity::where('course', $course)->get();
-            foreach ($activities as $activity) {
-                for ($i=1; $i < 13; $i++) { 
-                    $chance = rand(0,100);
-                    $attend = '';
-                    if($chance > 80) {
-                        $attend = False;
-                    } else {
-                        $attend = True;
-                    }
-                    $newEntry = ['student' => $student, 'activity' => $activity->id, 'week' => $i, 'attended' => $attend];
-                    StudentActivity::insert($newEntry);
+        //     // create student activity data
+        //     $activities = Activity::where('course', $course)->get();
+        //     foreach ($activities as $activity) {
+        //         for ($i=1; $i < 13; $i++) { 
+        //             $chance = rand(0,100);
+        //             $attend = '';
+        //             if($chance > 80) {
+        //                 $attend = False;
+        //             } else {
+        //                 $attend = True;
+        //             }
+        //             $newEntry = ['student' => $student, 'activity' => $activity->id, 'week' => $i, 'attended' => $attend];
+        //             StudentActivity::insert($newEntry);
                     
-                }
-            }
+        //         }
+        //     }
 
-            //create student assignment data
-            $assignments = Assignment::where('course', $course)->get();
-            foreach ($assignments as $assignment) {
-                $chance = rand(0,100);
-                $submitDate = '';
-                if($chance > 80) {
-                    $submitDate = "2023-12-01 12:00:00"; // some future date
-                } else {
-                    $submitDate = $assignment->due_date;
-                }
+        //     //create student assignment data
+        //     $assignments = Assignment::where('course', $course)->get();
+        //     foreach ($assignments as $assignment) {
+        //         $chance = rand(0,100);
+        //         $submitDate = '';
+        //         if($chance > 80) {
+        //             $submitDate = "2023-12-01 12:00:00"; // some future date
+        //         } else {
+        //             $submitDate = $assignment->due_date;
+        //         }
 
-                // chance used for more realistic distribution with less studends getting a very low or very high grade
-                $chance = rand(0,100);
-                $grade = 0;
-                if($chance > 80) {
-                    $grade = mt_rand(80, 100) / 100;
-                } elseif ($chance < 10) {
-                    $grade = mt_rand(0, 30) / 100;
-                } else {
-                    $grade = mt_rand(40, 80) / 100;
-                }
+        //         // chance used for more realistic distribution with less studends getting a very low or very high grade
+        //         $chance = rand(0,100);
+        //         $grade = 0;
+        //         if($chance > 80) {
+        //             $grade = mt_rand(80, 100) / 100;
+        //         } elseif ($chance < 10) {
+        //             $grade = mt_rand(0, 30) / 100;
+        //         } else {
+        //             $grade = mt_rand(40, 80) / 100;
+        //         }
 
-                $newEntry = ['student' => $student, 'assignment' => $assignment->id, 'date_submitted' => $submitDate, 'grade' => $grade];
-                StudentAssignment::insert($newEntry);
-            }
-        }
+        //         $newEntry = ['student' => $student, 'assignment' => $assignment->id, 'date_submitted' => $submitDate, 'grade' => $grade];
+        //         StudentAssignment::insert($newEntry);
+        //     }
+        // }
 
     }
 }
