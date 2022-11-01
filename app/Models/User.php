@@ -13,14 +13,23 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'users';
+    
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
+        'username',
+        'password',
         'name',
         'email',
-        'password',
     ];
 
     /**
@@ -41,4 +50,20 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Get tutor the user relates to.
+     */
+    public function tutor()
+    {
+        return $this->hasOne(Tutor::class, 'user');
+    }
+
+    /**
+     * Get tutor the student relates to.
+     */
+    public function student()
+    {
+        return $this->hasOne(Student::class, 'user');
+    }
 }
