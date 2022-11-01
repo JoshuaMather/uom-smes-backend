@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\ApiAuthController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,4 +21,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/students/{tutor}', [StudentController::class, 'index']);
+Route::group(['middleware' => ['cors']], function () {
+    Route::post('/login', [ApiAuthController::class, 'login']);
+
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/students/{tutor}', [StudentController::class, 'index']);
+
+    });
+});
+
+
+

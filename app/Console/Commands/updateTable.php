@@ -9,6 +9,7 @@ use App\Models\StudentAssignment;
 use App\Models\StudentCourse;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Hash;
 
 class updateTable extends Command
 {
@@ -35,7 +36,9 @@ class updateTable extends Command
     {
         // for ($i=1; $i < 500; $i++) { 
         //     $user = User::find($i);
-        //     User::where('id', $i)->update(array('email' => substr($user->email, 0, strpos($user->email, '@')) . '@student.manchester.ac.uk'));
+        //     $pass = Hash::make($user->password);
+        //     // User::where('id', $i)->update(array('email' => substr($user->email, 0, strpos($user->email, '@')) . '@manchester.ac.uk'));
+        //     User::where('id', $i)->update(array('password' => $pass));
         // }
 
         // for each student taking a course create entries for assignment and activities 
