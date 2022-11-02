@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class ApiAuthController extends Controller
 {
@@ -31,7 +32,12 @@ class ApiAuthController extends Controller
 
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
-                $token = $user->createToken('Valid Login')->accessToken;
+                $token = Str::random(60);
+ 
+                $user->forceFill([
+                    'api_token' => hash('sha256', $token),
+                ])->save();
+        
                 $response = ['token' => $token, 'user' => $user];
                 return response($response, 200);
             } else {
