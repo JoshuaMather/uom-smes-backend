@@ -13,7 +13,7 @@ class StudentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function studentList(Request $request)
     {
         // the tutor that made the request
         $tutorId = $request->tutor;
