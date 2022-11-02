@@ -32,7 +32,7 @@ class Concern extends Model
      */
     public function tutor()
     {
-        return $this->belongsTo(Tutor::class);
+        return $this->belongsTo(Tutor::class, 'tutor');
     }
 
     /**
@@ -40,6 +40,6 @@ class Concern extends Model
      */
     public function student()
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsTo(Student::class, 'student');
     }
 }

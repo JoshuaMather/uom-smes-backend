@@ -31,7 +31,7 @@ class StudentCourse extends Model
      */
     public function student()
     {
-        return $this->belongsTo(Student::class);
+        return $this->belongsTo(Student::class, 'student');
     }
 
     /**
@@ -39,6 +39,6 @@ class StudentCourse extends Model
      */
     public function course()
     {
-        return $this->belongsTo(Course::class);
+        return $this->belongsTo(Course::class, 'course');
     }
 }

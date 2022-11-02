@@ -32,7 +32,7 @@ class Course extends Model
      */
     public function tutor()
     {
-        return $this->hasOne(Tutor::class);
+        return $this->hasOne(Tutor::class, 'tutor');
     }
 
     /**
