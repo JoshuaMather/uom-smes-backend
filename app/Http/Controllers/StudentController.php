@@ -21,11 +21,11 @@ class StudentController extends Controller
 
         $studentList = [];
         if($tutor->role === 'admin'){
-            $studentList = Student::all();
+            $studentList = Student::with('user')->get();
         } elseif ($tutor->role === 'year_tutor') {
-            $studentList = Student::where('year', $tutor->year)->get();
+            $studentList = Student::where('year', $tutor->year)->with('user')->get();
         } else {
-            $studentList = Student::where('personal_tutor', $tutorId)->get();
+            $studentList = Student::where('personal_tutor', $tutorId)->with('user')->get();
         }
 
         return response(['students' => $studentList]);
