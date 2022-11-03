@@ -36,6 +36,14 @@ class Student extends Model
     }
 
     /**
+     * Get student's personal tutor.
+     */
+    public function personal_tutor()
+    {
+        return $this->belongsTo(Tutor::class, 'personal_tutor');
+    }
+
+    /**
      * Get student activity relation.
      */
     public function studentActivity()
