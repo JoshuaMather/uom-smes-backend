@@ -27,6 +27,9 @@ class Student extends Model
         'year',
     ];
 
+    protected $appends = ['attendance', 'average_grade'];
+
+
     /**
      * Get user the student belongs to.
      */
@@ -81,5 +84,40 @@ class Student extends Model
     public function concerns()
     {
         return $this->hasMany(Concern::class, 'student');
+    }
+
+    /**
+     * Get the attendance for the student.
+     */
+    public function getAttendanceAttribute() 
+    {
+        $attended = StudentActivity::where([
+            ['student', $this->id],
+            ['attended', 1]
+        ])->count();
+        $total = StudentActivity::where('student', $this->id)->count();
+
+        $attendance = 0;
+        if($total !== 0) {
+            $attendance = $attended / $total;
+        }
+        $attendance = round($attendance, 2);
+
+        return $attendance;
+    }
+
+     /**
+     * Get the attendance for the student.
+     */
+    public function getAverageGradeAttribute() 
+    {
+        
+        $averageGrade = StudentAssignment::where('student', $this->id)->avg('grade');
+        if(!$averageGrade){
+            $averageGrade = 0;
+        }
+        $averageGrade = round($averageGrade, 2);
+
+        return $averageGrade;
     }
 }
