@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class StudentController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Retrieve all students from a request made by a tutor.
      *
      * @return \Illuminate\Http\Response
      */
@@ -29,5 +29,21 @@ class StudentController extends Controller
         }
 
         return response(['students' => $studentList]);
+    }
+
+     /**
+     * Get data for a student.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function studentData(Request $request)
+    {
+        // the student that the data is for 
+        $studentId = $request->student;
+        $student = Student::where('id', $studentId)->with('user', 'studentCourse.course', 'studentActivity.activity', 'studentAssignment.assignment', 'studentLast', 'concerns')->get();
+
+        // engagement
+
+        return response(['student' => $student[0]]);
     }
 }

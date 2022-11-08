@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Activity;
 use App\Models\Assignment;
+use App\Models\Student;
 use App\Models\StudentActivity;
 use App\Models\StudentAssignment;
 use App\Models\StudentCourse;
@@ -91,5 +92,21 @@ class updateTable extends Command
         //     }
         // }
 
+        // add degree
+        // $list = Student::all();
+        // foreach ($list as $entry) {
+        //     $chance = rand(0,100);
+        //     $degree = '';
+        //     if($chance > 70) {
+        //         $degree = 'Computer Science and Maths';
+        //     } elseif ($chance < 20) {
+        //         $degree = 'Artificial Intelligence';
+        //     } else {
+        //         $degree = 'Computer Science';
+        //     }
+
+        //     $entry->degree = $degree;
+        //     $entry->save();
+        // }
     }
 }

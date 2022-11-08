@@ -26,7 +26,7 @@ Route::group(['middleware' => ['cors']], function () {
 
     Route::middleware('auth:api')->group(function () {
         Route::get('/students/{tutor}', [StudentController::class, 'studentList']);
-
+        Route::get('/student/{student}', [StudentController::class, 'studentData']);
     });
 });
 
