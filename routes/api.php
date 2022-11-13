@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\ApiAuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\TutorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,8 @@ Route::group(['middleware' => ['cors']], function () {
     Route::middleware('auth:api')->group(function () {
         Route::get('/students/{tutor}', [StudentController::class, 'studentList']);
         Route::get('/student/{student}', [StudentController::class, 'studentData']);
+
+        Route::get('/tutors/', [TutorController::class, 'index']);
     });
 });
 
