@@ -75,7 +75,7 @@ class Student extends Model
      */
     public function studentLast()
     {
-        return $this->hasMany(StudentLast::class, 'student');
+        return $this->hasMany(StudentLast::class, 'student')->orderBy('datetime', 'DESC');
     }
 
     /**

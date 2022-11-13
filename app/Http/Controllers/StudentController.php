@@ -40,7 +40,7 @@ class StudentController extends Controller
     {
         // the student that the data is for 
         $studentId = $request->student;
-        $student = Student::where('id', $studentId)->with('user', 'studentCourse.course', 'studentActivity.activity', 'studentAssignment.assignment', 'studentLast', 'concerns')->get();
+        $student = Student::where('id', $studentId)->with('user', 'studentCourse.course', 'studentActivity.activity', 'studentAssignment.assignment', 'studentLast', 'concerns', 'personal_tutor.user')->get();
 
         // engagement
 
