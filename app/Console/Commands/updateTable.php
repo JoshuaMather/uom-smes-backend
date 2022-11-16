@@ -10,6 +10,7 @@ use App\Models\StudentAssignment;
 use App\Models\StudentCourse;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class updateTable extends Command
@@ -108,5 +109,19 @@ class updateTable extends Command
         //     $entry->degree = $degree;
         //     $entry->save();
         // }
+
+        // $duplicated = DB::table('student_course')
+        //     ->select('student', 'course')
+        //     ->groupBy('student', 'course')
+        //     ->havingRaw('COUNT(*) > 1')
+        //     ->get();
+
+        // foreach($duplicated as $record) {
+        //     $dontDeleteThisRow = StudentCourse::where(['student'=>$record->student,'course'=>$record->course])->first();
+        //     StudentCourse::where(['student'=>$record->student,'course'=>$record->course])->where('id', '!=', $dontDeleteThisRow->id)->delete();
+        //     // $record->delete();
+        // }
+
+        // error_log($duplicated);
     }
 }
