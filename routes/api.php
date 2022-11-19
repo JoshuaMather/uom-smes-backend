@@ -30,6 +30,7 @@ Route::group(['middleware' => ['cors']], function () {
         Route::get('/student/{student}', [StudentController::class, 'studentData']);
 
         Route::get('/tutors/', [TutorController::class, 'index']);
+        Route::post('/concern/', [TutorController::class, 'reportConcern']);
     });
 });
 
