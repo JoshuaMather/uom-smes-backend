@@ -27,6 +27,8 @@ class Course extends Model
         'tutor',
     ];
 
+    protected $appends = ['average_attendance'];
+
     /**
      * Get tutor the course is run by.
      */
@@ -57,5 +59,26 @@ class Course extends Model
     public function assignments()
     {
         return $this->hasMany(Assignment::class, 'course');
+    }
+
+     /**
+     * Get the average attendance for the course.
+     */
+    public function getAverageAttendanceAttribute() 
+    {
+        $averageAttendance = 0;
+
+        $activities = Activity::where('course', $this->id)->pluck('id');
+
+        $courseActivityList = StudentActivity::whereIn('activity', $activities)->get()->groupBy('student');
+
+        foreach ($courseActivityList as $studentActivities) {
+            $averageAttendance += $studentActivities->sum('attended') / count($studentActivities);
+            
+        }
+        $averageAttendance = $averageAttendance / count($courseActivityList);
+        $averageAttendance = number_format((float)$averageAttendance, 2);
+
+        return $averageAttendance;
     }
 }
