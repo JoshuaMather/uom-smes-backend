@@ -8,6 +8,7 @@ use App\Models\Student;
 use App\Models\StudentActivity;
 use App\Models\StudentAssignment;
 use App\Models\StudentCourse;
+use App\Models\StudentLast;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -123,5 +124,67 @@ class updateTable extends Command
         // }
 
         // error_log($duplicated);
+
+        // add week to history table
+        // $list = StudentLast::whereDate('datetime', '<=', date("2022-10-02"))->whereDate('datetime', '>=', date("2022-09-26"))->get();
+        // foreach ($list as $entry) {
+        //     $entry->week = 1;
+        //     $entry->save();
+        // }
+        // $list = StudentLast::whereDate('datetime', '<=', date("2022-10-09"))->whereDate('datetime', '>=', date("2022-10-03"))->get();
+        // foreach ($list as $entry) {
+        //     $entry->week = 2;
+        //     $entry->save();
+        // }
+        // $list = StudentLast::whereDate('datetime', '<=', date("2022-10-16"))->whereDate('datetime', '>=', date("2022-10-10"))->get();
+        // foreach ($list as $entry) {
+        //     $entry->week = 3;
+        //     $entry->save();
+        // }
+        // $list = StudentLast::whereDate('datetime', '<=', date("2022-10-23"))->whereDate('datetime', '>=', date("2022-10-17"))->get();
+        // foreach ($list as $entry) {
+        //     $entry->week = 4;
+        //     $entry->save();
+        // }
+        // $list = StudentLast::whereDate('datetime', '<=', date("2022-10-30"))->whereDate('datetime', '>=', date("2022-10-24"))->get();
+        // foreach ($list as $entry) {
+        //     $entry->week = 5;
+        //     $entry->save();
+        // }
+        // $list = StudentLast::whereDate('datetime', '<=', date("2022-11-06"))->whereDate('datetime', '>=', date("2022-10-31"))->get();
+        // foreach ($list as $entry) {
+        //     $entry->week = 6;
+        //     $entry->save();
+        // }
+        // $list = StudentLast::whereDate('datetime', '<=', date("2022-11-13"))->whereDate('datetime', '>=', date("2022-11-07"))->get();
+        // foreach ($list as $entry) {
+        //     $entry->week = 7;
+        //     $entry->save();
+        // }
+        // $list = StudentLast::whereDate('datetime', '<=', date("2022-11-20"))->whereDate('datetime', '>=', date("2022-11-14"))->get();
+        // foreach ($list as $entry) {
+        //     $entry->week = 8;
+        //     $entry->save();
+        // }
+        // $list = StudentLast::whereDate('datetime', '<=', date("2022-11-27"))->whereDate('datetime', '>=', date("2022-11-21"))->get();
+        // foreach ($list as $entry) {
+        //     $entry->week = 9;
+        //     $entry->save();
+        // }
+        // $list = StudentLast::whereDate('datetime', '<=', date("2022-12-04"))->whereDate('datetime', '>=', date("2022-11-28"))->get();
+        // foreach ($list as $entry) {
+        //     $entry->week = 10;
+        //     $entry->save();
+        // }
+        // $list = StudentLast::whereDate('datetime', '<=', date("2022-12-11"))->whereDate('datetime', '>=', date("2022-12-05"))->get();
+        // foreach ($list as $entry) {
+        //     $entry->week = 11;
+        //     $entry->save();
+        // }
+        // $list = StudentLast::whereDate('datetime', '<=', date("2022-12-18"))->whereDate('datetime', '>=', date("2022-12-12"))->get();
+        // foreach ($list as $entry) {
+        //     $entry->week = 12;
+        //     $entry->save();
+        // }
     }
 }
