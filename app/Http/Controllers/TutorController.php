@@ -37,4 +37,18 @@ class TutorController extends Controller
 
         return response(['success' => 400]);
     }
+
+    /**
+     * Get concerns for a student.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getConcerns(Request $request)
+    {
+        $studentId = $request->student;
+
+        $concernsList = Concern::where('student', $studentId)->with('tutor.user')->get();
+
+        return response(['concerns' => $concernsList]);
+    }
 }
