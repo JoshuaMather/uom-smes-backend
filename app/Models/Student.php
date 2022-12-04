@@ -27,7 +27,7 @@ class Student extends Model
         'year',
     ];
 
-    protected $appends = ['attendance', 'average_grade'];
+    protected $appends = ['attendance', 'predicted_grade'];
 
 
     /**
@@ -107,17 +107,22 @@ class Student extends Model
     }
 
      /**
-     * Get the attendance for the student.
+     * Get the predicted grade for the student.
      */
-    public function getAverageGradeAttribute() 
+    public function getPredictedGradeAttribute() 
     {
-        
-        $averageGrade = StudentAssignment::where('student', $this->id)->avg('grade');
-        if(!$averageGrade){
-            $averageGrade = 0;
-        }
-        $averageGrade = round($averageGrade, 2);
+        $studentCourseInfo = StudentCourse::where('student', $this->id)->get();
+        $predict = 0;
 
-        return $averageGrade;
+        if(count($studentCourseInfo) !== 0) {
+            foreach ($studentCourseInfo as $course) {
+                $predict += $course->predicted_grade;
+            }
+            $predict = $predict / count($studentCourseInfo);
+    
+            $predict = round($predict, 2);
+        }
+
+        return $predict;
     }
 }
