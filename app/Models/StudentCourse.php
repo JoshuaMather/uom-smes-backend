@@ -26,7 +26,7 @@ class StudentCourse extends Model
         'course',
     ];
 
-    protected $appends = ['predicted_grade'];
+    protected $appends = ['predicted_grade', 'current_grade'];
 
     /**
      * Get the student.
@@ -62,5 +62,30 @@ class StudentCourse extends Model
         $prediction = round($prediction, 2);
 
         return $prediction;
+    }
+
+    /**
+     * Get the current grade for the student for the course.
+     */
+    public function getCurrentGradeAttribute() 
+    {
+        $student = $this->student;
+        $course = $this->course;
+
+        $assignmentsForCourse = Assignment::where('course', $course)->get();
+        $grade = 0;
+        $weight = 0; // need to adjust weights to just include summative
+        foreach ($assignmentsForCourse as $assignment) {
+            $assignmentByStudent = StudentAssignment::where('student', $student)->where('assignment', $assignment->id)->get();
+            if(str_contains($assignment->type, '_s')){
+                $weight += $assignment->engagement_weight;
+                $grade += $assignmentByStudent[0]->grade * $assignment->engagement_weight;
+            }
+        }
+
+        $grade = ($grade / $weight);
+        $grade = round($grade, 2);
+
+        return $grade;
     }
 }

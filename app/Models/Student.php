@@ -27,7 +27,7 @@ class Student extends Model
         'year',
     ];
 
-    protected $appends = ['attendance', 'predicted_grade'];
+    protected $appends = ['attendance', 'predicted_grade', 'current_grade'];
 
 
     /**
@@ -124,5 +124,25 @@ class Student extends Model
         }
 
         return $predict;
+    }
+
+    /**
+     * Get the current grade for the student.
+     */
+    public function getCurrentGradeAttribute() 
+    {
+        $studentCourseInfo = StudentCourse::where('student', $this->id)->get();
+        $grade = 0;
+
+        if(count($studentCourseInfo) !== 0) {
+            foreach ($studentCourseInfo as $course) {
+                $grade += $course->current_grade;
+            }
+            $grade = $grade / count($studentCourseInfo);
+    
+            $grade = round($grade, 2);
+        }
+
+        return $grade;
     }
 }
