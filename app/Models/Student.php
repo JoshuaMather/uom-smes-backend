@@ -117,8 +117,8 @@ class Student extends Model
 
         if(count($studentCourseInfo) !== 0) {
             foreach ($studentCourseInfo as $course) {
-                $grade += $course->current_grade;
-                $predict += $course->predicted_grade;
+                $grade += $course->grades['current'];
+                $predict += $course->grades['predict'];
             }
             $grade = $grade / count($studentCourseInfo);
             $grade = round($grade, 2);
