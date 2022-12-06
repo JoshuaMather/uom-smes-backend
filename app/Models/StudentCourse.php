@@ -26,7 +26,7 @@ class StudentCourse extends Model
         'course',
     ];
 
-    protected $appends = ['predicted_grade', 'current_grade'];
+    protected $appends = ['grades'];
 
     /**
      * Get the student.
@@ -47,27 +47,7 @@ class StudentCourse extends Model
     /**
      * Get the predicted grade for the student for the course.
      */
-    public function getPredictedGradeAttribute() 
-    {
-        $student = $this->student;
-        $course = $this->course;
-
-        $assignmentsForCourse = Assignment::where('course', $course)->get();
-        $prediction = 0;
-        foreach ($assignmentsForCourse as $assignment) {
-            $assignmentByStudent = StudentAssignment::where('student', $student)->where('assignment', $assignment->id)->get();
-            $prediction += $assignmentByStudent[0]->grade * $assignment->engagement_weight;
-        }
-
-        $prediction = round($prediction, 2);
-
-        return $prediction;
-    }
-
-    /**
-     * Get the current grade for the student for the course.
-     */
-    public function getCurrentGradeAttribute() 
+    public function getGradesAttribute() 
     {
         $student = $this->student;
         $course = $this->course;
@@ -75,8 +55,10 @@ class StudentCourse extends Model
         $assignmentsForCourse = Assignment::where('course', $course)->get();
         $grade = 0;
         $weight = 0; // need to adjust weights to just include summative
+        $prediction = 0;
         foreach ($assignmentsForCourse as $assignment) {
             $assignmentByStudent = StudentAssignment::where('student', $student)->where('assignment', $assignment->id)->get();
+            $prediction += $assignmentByStudent[0]->grade * $assignment->engagement_weight;
             if(str_contains($assignment->type, '_s')){
                 $weight += $assignment->engagement_weight;
                 $grade += $assignmentByStudent[0]->grade * $assignment->engagement_weight;
@@ -85,7 +67,12 @@ class StudentCourse extends Model
 
         $grade = ($grade / $weight);
         $grade = round($grade, 2);
+        $prediction = round($prediction, 2);
 
-        return $grade;
+        // return $prediction;
+        return [
+            'predict' => $prediction,
+            'current' => $grade
+        ];
     }
 }

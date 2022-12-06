@@ -27,7 +27,7 @@ class Student extends Model
         'year',
     ];
 
-    protected $appends = ['attendance', 'predicted_grade', 'current_grade'];
+    protected $appends = ['attendance', 'grades'];
 
 
     /**
@@ -107,42 +107,29 @@ class Student extends Model
     }
 
      /**
-     * Get the predicted grade for the student.
+     * Get the current and predicted grade for the student.
      */
-    public function getPredictedGradeAttribute() 
+    public function getGradesAttribute() 
     {
         $studentCourseInfo = StudentCourse::where('student', $this->id)->get();
+        $grade = 0;
         $predict = 0;
 
         if(count($studentCourseInfo) !== 0) {
             foreach ($studentCourseInfo as $course) {
+                $grade += $course->current_grade;
                 $predict += $course->predicted_grade;
             }
+            $grade = $grade / count($studentCourseInfo);
+            $grade = round($grade, 2);
+
             $predict = $predict / count($studentCourseInfo);
-    
             $predict = round($predict, 2);
         }
 
-        return $predict;
-    }
-
-    /**
-     * Get the current grade for the student.
-     */
-    public function getCurrentGradeAttribute() 
-    {
-        $studentCourseInfo = StudentCourse::where('student', $this->id)->get();
-        $grade = 0;
-
-        if(count($studentCourseInfo) !== 0) {
-            foreach ($studentCourseInfo as $course) {
-                $grade += $course->current_grade;
-            }
-            $grade = $grade / count($studentCourseInfo);
-    
-            $grade = round($grade, 2);
-        }
-
-        return $grade;
+        return [
+            'predict' => $predict,
+            'current' => $grade
+        ];
     }
 }
