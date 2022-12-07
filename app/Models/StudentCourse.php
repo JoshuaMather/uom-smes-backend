@@ -75,4 +75,76 @@ class StudentCourse extends Model
             'current' => $grade
         ];
     }
+
+    /**
+     * Get the grade distribution for the course.
+     */
+    public function getGradeDistributionAttribute() 
+    {
+        $distribution = [];
+        $current = [0,0,0,0,0,0,0,0,0,0];
+        $predicted = [0,0,0,0,0,0,0,0,0,0];
+        $studentCourses = StudentCourse::where('course', $this->course)->get();
+        
+        foreach ($studentCourses as $course) {
+            $currentG = $course->grades['current'];
+            if($currentG>=0 &&$currentG<=0.1) {
+                $current[0] += 1;
+            } else if($currentG>0.1 && $currentG<=0.2) {
+                $current[1] += 1;
+            } else if($currentG>0.2 && $currentG<=0.3) {
+                $current[2] += 1;
+            }  else if($currentG>0.3 && $currentG<=0.4) {
+                $current[3] += 1;
+            }  else if($currentG>0.4 && $currentG<=0.5) {
+                $current[4] += 1;
+            }  else if($currentG>0.5 && $currentG<=0.6) {
+                $current[5] += 1;
+            }  else if($currentG>0.6 && $currentG<=0.7) {
+                $current[6] += 1;
+            }  else if($currentG>0.7 && $currentG<=0.8) {
+                $current[7] += 1;
+            }  else if($currentG>0.8 && $currentG<=0.9) {
+                $current[8] += 1;
+            }  else if($currentG>0.9 && $currentG<=1) {
+                $current[9] += 1;
+            }     
+
+            $predictG = $course->grades['predict'];
+            if($predictG>=0 &&$predictG<=0.1) {
+                $predicted[0] += 1;
+            } else if($predictG>0.1 && $predictG<=0.2) {
+                $predicted[1] += 1;
+            } else if($predictG>0.2 && $predictG<=0.3) {
+                $predicted[2] += 1;
+            }  else if($predictG>0.3 && $predictG<=0.4) {
+                $predicted[3] += 1;
+            }  else if($predictG>0.4 && $predictG<=0.5) {
+                $predicted[4] += 1;
+            }  else if($predictG>0.5 && $predictG<=0.6) {
+                $predicted[5] += 1;
+            }  else if($predictG>0.6 && $predictG<=0.7) {
+                $predicted[6] += 1;
+            }  else if($predictG>0.7 && $predictG<=0.8) {
+                $predicted[7] += 1;
+            }  else if($predictG>0.8 && $predictG<=0.9) {
+                $predicted[8] += 1;
+            }  else if($predictG>0.9 && $predictG<=1) {
+                $predicted[9] += 1;
+            }     
+        }
+
+        array_push($distribution, ['label' => '0-10', 'current' => $current[0], 'predicted' => $predicted[0]]);
+        array_push($distribution, ['label' => '11-20', 'current' => $current[1], 'predicted' => $predicted[1]]);
+        array_push($distribution, ['label' => '21-30', 'current' => $current[2], 'predicted' => $predicted[2]]);
+        array_push($distribution, ['label' => '31-40', 'current' => $current[3], 'predicted' => $predicted[3]]);
+        array_push($distribution, ['label' => '41-50', 'current' => $current[4], 'predicted' => $predicted[4]]);
+        array_push($distribution, ['label' => '51-60', 'current' => $current[5], 'predicted' => $predicted[5]]);
+        array_push($distribution, ['label' => '61-70', 'current' => $current[6], 'predicted' => $predicted[6]]);
+        array_push($distribution, ['label' => '71-80', 'current' => $current[7], 'predicted' => $predicted[7]]);
+        array_push($distribution, ['label' => '81-90', 'current' => $current[8], 'predicted' => $predicted[8]]);
+        array_push($distribution, ['label' => '91-100', 'current' => $current[9], 'predicted' => $predicted[9]]);
+        
+        return $distribution;
+    }
 }
