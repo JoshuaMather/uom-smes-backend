@@ -114,6 +114,7 @@ class Student extends Model
         $studentCourseInfo = StudentCourse::where('student', $this->id)->get();
         $grade = 0;
         $predict = 0;
+        $engagement = 0;
 
         if(count($studentCourseInfo) !== 0) {
             foreach ($studentCourseInfo as $course) {
@@ -127,9 +128,13 @@ class Student extends Model
             $predict = round($predict, 2);
         }
 
+        $engagement = (0.4*$grade) + (0.3 * $predict) + (0.3*$this->attendance);
+        $engagement = round($engagement, 2);
+
         return [
             'predict' => $predict,
-            'current' => $grade
+            'current' => $grade,
+            'engagement' => $engagement
         ];
     }
 }
