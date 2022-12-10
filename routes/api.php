@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['middleware' => ['cors']], function () {
     Route::post('/login', [ApiAuthController::class, 'login']);
+    Route::post('/request-register-tutor', [TutorController::class, 'requestRegister']);
 
     Route::middleware('auth:api')->group(function () {
         Route::get('/students/{tutor}', [StudentController::class, 'studentList']);

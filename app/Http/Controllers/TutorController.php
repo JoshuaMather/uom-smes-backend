@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Concern;
 use App\Models\Student;
 use App\Models\Tutor;
+use App\Models\TutorRequest;
 use Illuminate\Http\Request;
 
 class TutorController extends Controller
@@ -50,5 +51,32 @@ class TutorController extends Controller
         $concernsList = Concern::where('student', $studentId)->with('tutor.user')->get();
 
         return response(['concerns' => $concernsList]);
+    }
+
+    /**
+     * Register new tutor to be accepted.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function requestRegister(Request $request)
+    {
+        //check if details already exist
+        $newTutorRequest = new TutorRequest;
+        $newTutorRequest->username = $request->username;
+        //hash password
+        $newTutorRequest->password = $request->password;
+        $newTutorRequest->email = $request->email;
+        $newTutorRequest->name = $request->name;
+        if($request->role==='year_tutor'){
+            $newTutorRequest->role = $request->role;
+            $newTutorRequest->year = $request->year;
+        } else if($request->role==='admin') {
+            $newTutorRequest->role = $request->role;
+        }
+        $newTutorRequest->save();
+
+        // $concernsList = Concern::where('student', $studentId)->with('tutor.user')->get();
+
+        return response(['success' => 400]);
     }
 }
