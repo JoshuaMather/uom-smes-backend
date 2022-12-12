@@ -90,8 +90,26 @@ class TutorController extends Controller
         }
         $newTutorRequest->save();
 
-        // $concernsList = Concern::where('student', $studentId)->with('tutor.user')->get();
-
         return response(['success' => 200]);
+    }
+
+    /**
+     * Get requests for new tutors.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getTutorRequests(Request $request)
+    {
+        $tutorId = $request->tutor;
+        $tutor = Tutor::where('id', $tutorId)->first();
+        // check if admin
+        if($tutor->role !== 'admin'){
+            return response(['success' => 400]);
+        }
+
+        // return list of requests
+        $tutorRequests = TutorRequest::all();
+
+        return response(['tutorRequests' => $tutorRequests]);
     }
 }

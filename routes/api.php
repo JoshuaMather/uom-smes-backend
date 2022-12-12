@@ -33,6 +33,7 @@ Route::group(['middleware' => ['cors']], function () {
         Route::get('/tutors/', [TutorController::class, 'index']);
         Route::post('/concern/', [TutorController::class, 'reportConcern']);
         Route::get('/concerns/{student}', [TutorController::class, 'getConcerns']);
+        Route::get('/tutor-requests/{tutor}', [TutorController::class, 'getTutorRequests']);
     });
 });
 
