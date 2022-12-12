@@ -6,7 +6,9 @@ use App\Models\Concern;
 use App\Models\Student;
 use App\Models\Tutor;
 use App\Models\TutorRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class TutorController extends Controller
 {
@@ -36,7 +38,7 @@ class TutorController extends Controller
         $newConcern->concern = $request->concern;
         $newConcern->save();
 
-        return response(['success' => 400]);
+        return response(['success' => 200]);
     }
 
     /**
@@ -61,10 +63,23 @@ class TutorController extends Controller
     public function requestRegister(Request $request)
     {
         //check if details already exist
+        if (User::where('username', '=', $request->username)->count() > 0 || TutorRequest::where('username', '=', $request->username)->count() > 0) {
+            return response(
+                ['success' => 400,
+                'error' => 'Tutor with given username already exists']
+        );
+        }
+        
+        if (User::where('email', '=', $request->email)->count() > 0 || TutorRequest::where('email', '=', $request->email)->count() > 0) {
+            return response(
+                ['success' => 400,
+                'error' => 'Tutor with given email already exists']
+        );
+        }
+
         $newTutorRequest = new TutorRequest;
         $newTutorRequest->username = $request->username;
-        //hash password
-        $newTutorRequest->password = $request->password;
+        $newTutorRequest->password = Hash::make($request->password);;
         $newTutorRequest->email = $request->email;
         $newTutorRequest->name = $request->name;
         if($request->role==='year_tutor'){
@@ -77,6 +92,6 @@ class TutorController extends Controller
 
         // $concernsList = Concern::where('student', $studentId)->with('tutor.user')->get();
 
-        return response(['success' => 400]);
+        return response(['success' => 200]);
     }
 }
