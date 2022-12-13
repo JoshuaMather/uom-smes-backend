@@ -18,7 +18,7 @@ class StudentController extends Controller
     {
         // the tutor that made the request
         $tutorId = $request->tutor;
-        $tutor = Tutor::find($tutorId);
+        $tutor = Tutor::find($tutorId)->first();
 
         $studentList = [];
         if($tutor->role === 'admin'){

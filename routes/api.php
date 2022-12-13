@@ -34,6 +34,8 @@ Route::group(['middleware' => ['cors']], function () {
         Route::post('/concern/', [TutorController::class, 'reportConcern']);
         Route::get('/concerns/{student}', [TutorController::class, 'getConcerns']);
         Route::get('/tutor-requests/{tutor}', [TutorController::class, 'getTutorRequests']);
+        Route::post('/accept-tutor/{tutor}/{requestId}', [TutorController::class, 'acceptTutorRequests']);
+        Route::post('/decline-tutor/{tutor}/{requestId}', [TutorController::class, 'declineTutorRequests']);
     });
 });
 

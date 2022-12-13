@@ -102,7 +102,6 @@ class TutorController extends Controller
     {
         $tutorId = $request->tutor;
         $tutor = Tutor::where('id', $tutorId)->first();
-        // check if admin
         if($tutor->role !== 'admin'){
             return response(['success' => 400]);
         }
@@ -111,5 +110,67 @@ class TutorController extends Controller
         $tutorRequests = TutorRequest::all();
 
         return response(['tutorRequests' => $tutorRequests]);
+    }
+
+    /**
+     * Accept requests for new tutor.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function acceptTutorRequests(Request $request)
+    {
+        $tutorId = $request->tutor;
+        $requestId = $request->requestId;
+        $tutor = Tutor::where('id', $tutorId)->first();
+        if($tutor->role !== 'admin'){
+            return response(['success' => 400]);
+        }
+
+        $tutorRequest = TutorRequest::find($requestId)->first();
+
+        $user = new User();
+        $user->username = $tutorRequest->username;
+        $user->email = $tutorRequest->email;
+        $user->password = $tutorRequest->password;
+        $user->name = $tutorRequest->name;
+        $user->save();
+
+        $tutor = new Tutor();
+        $tutor->user = $user->id;
+        if(!$tutorRequest->role){
+            $tutor->role = '';
+        } else {
+            $tutor->role = $tutorRequest->role;
+        }
+        if(!$tutorRequest->year){
+            $tutor->year = '';
+        } else {
+            $tutor->year = $tutorRequest->year;
+        }
+        $tutor->save();
+
+        TutorRequest::find($requestId)->delete();
+
+        return response(['success' => 200]);
+    }
+
+    /**
+     * Decline requests for new tutor.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function declineTutorRequests(Request $request)
+    {
+        $tutorId = $request->tutor;
+        $requestId = $request->requestId;
+
+        $tutor = Tutor::where('id', $tutorId)->first();
+        if($tutor->role !== 'admin'){
+            return response(['success' => 400]);
+        }
+
+        TutorRequest::find($requestId)->delete();
+
+        return response(['success' => 200]);
     }
 }
