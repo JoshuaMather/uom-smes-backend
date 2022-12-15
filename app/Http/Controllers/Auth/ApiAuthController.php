@@ -22,7 +22,7 @@ class ApiAuthController extends Controller
         }
 
 
-        $user = User::where('username', $request->username)->with('tutor', 'student')->first();
+        $user = User::where('username', $request->username)->with('tutor', 'tutor.course', 'student')->first();
         // only have student or tutor
         if($user->tutor===null){
             unset($user->tutor);

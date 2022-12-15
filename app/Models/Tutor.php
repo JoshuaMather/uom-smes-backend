@@ -56,6 +56,6 @@ class Tutor extends Model
      */
     public function course()
     {
-        return $this->hasOne(Course::class, 'tutor');
+        return $this->hasMany(Course::class, 'tutor');
     }
 }
