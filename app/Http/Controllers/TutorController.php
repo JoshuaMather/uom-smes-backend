@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Concern;
+use App\Models\Course;
 use App\Models\Student;
 use App\Models\Tutor;
 use App\Models\TutorRequest;
@@ -170,6 +171,30 @@ class TutorController extends Controller
         }
 
         TutorRequest::find($requestId)->delete();
+
+        return response(['success' => 200]);
+    }
+
+    /**
+     * Get course info and relating students for tutor.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getTutorCourses(Request $request)
+    {
+        $tutorId = $request->tutor;
+        $courseId = $request->course;
+
+        $tutor = Tutor::where('id', $tutorId)->first();
+        $course = Course::where('id', $courseId)->first();
+
+        if($course->tutor !== $tutor->id){
+            return response([
+                'success' => 400,
+                'error' => 'This tutor does not run this course'
+            ]);
+        }
+
 
         return response(['success' => 200]);
     }
