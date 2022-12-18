@@ -27,7 +27,7 @@ class Course extends Model
         'tutor',
     ];
 
-    protected $appends = ['average_attendance'];
+    protected $appends = ['average_attendance', 'average_grades'];
 
     /**
      * Get tutor the course is run by.
@@ -80,5 +80,32 @@ class Course extends Model
         $averageAttendance = number_format((float)$averageAttendance, 2);
 
         return $averageAttendance;
+    }
+
+     /**
+     * Get the average attendance for the course.
+     */
+    public function getAverageGradesAttribute() 
+    {
+        $averageCurrentGrade = 0;
+        $averagePredictedGrade = 0;
+
+        $studentCourse = StudentCourse::where('course', $this->id)->get();
+
+        foreach ($studentCourse as $student) {
+            $averageCurrentGrade += $student->grades['current'];
+            $averagePredictedGrade += $student->grades['predict'];
+        }
+
+        $averagePredictedGrade = $averagePredictedGrade / count($studentCourse);
+        $averagePredictedGrade = number_format((float)$averagePredictedGrade, 2);
+
+        $averageCurrentGrade = $averageCurrentGrade / count($studentCourse);
+        $averageCurrentGrade = number_format((float)$averageCurrentGrade, 2);
+
+        return [
+            'predict' => $averagePredictedGrade,
+            'current' => $averageCurrentGrade
+        ];
     }
 }

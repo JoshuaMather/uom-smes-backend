@@ -26,7 +26,7 @@ class StudentCourse extends Model
         'course',
     ];
 
-    protected $appends = ['grades'];
+    protected $appends = ['grades', 'attendance'];
 
     /**
      * Get the student.
@@ -42,6 +42,34 @@ class StudentCourse extends Model
     public function course()
     {
         return $this->belongsTo(Course::class, 'course');
+    }
+
+     /**
+     * Get the predicted grade for the student for the course.
+     */
+    public function getAttendanceAttribute() 
+    {
+        $student = $this->student;
+        $course = $this->course;
+
+        $attended = StudentActivity::join('activity', 'student_activity.activity', '=', 'activity.id')->where([
+            ['student', $student],
+            ['attended', 1],
+            ['activity.course', $course]
+        ])->count();
+        
+        $total = StudentActivity::join('activity', 'student_activity.activity', '=', 'activity.id')->where([
+            ['student', $student],
+            ['activity.course', $course]
+        ])->count();
+
+        $attendance = 0;
+        if($total !== 0) {
+            $attendance = $attended / $total;
+        }
+        $attendance = round($attendance, 2);
+
+        return $attendance;
     }
 
     /**
@@ -69,7 +97,6 @@ class StudentCourse extends Model
         $grade = round($grade, 2);
         $prediction = round($prediction, 2);
 
-        // return $prediction;
         return [
             'predict' => $prediction,
             'current' => $grade

@@ -195,7 +195,16 @@ class TutorController extends Controller
             ]);
         }
 
+        $studentList = Student::join('student_course', 'students.id', '=', 'student_course.student')->where('student_course.course', $courseId)->with('user', 'personal_tutor.user', 'studentCourse', )->withCount('concerns')->get();
+        // foreach ($studentList as $student) {
+        //     return $student->student_course;
+        //     $student->student_course = array_filter($student->student_course, fn($courseS) => $courseS->id !== $course->id);
+        // }
 
-        return response(['success' => 200]);
+        return response([
+            'success' => 200,
+            'students' => $studentList,
+            'course' => $course
+        ]);
     }
 }
