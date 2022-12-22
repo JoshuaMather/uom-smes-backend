@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Concern;
 use App\Models\Course;
 use App\Models\Student;
+use App\Models\StudentActivity;
+use App\Models\StudentAssignment;
 use App\Models\Tutor;
 use App\Models\TutorRequest;
 use App\Models\User;
@@ -184,22 +186,25 @@ class TutorController extends Controller
     {
         $tutorId = $request->tutor;
         $courseId = $request->course;
-
+        
         $tutor = Tutor::where('id', $tutorId)->first();
         $course = Course::where('id', $courseId)->first();
-
+        
         if($course->tutor !== $tutor->id){
             return response([
                 'success' => 400,
                 'error' => 'This tutor does not run this course'
             ]);
         }
-
-        $studentList = Student::join('student_course', 'students.id', '=', 'student_course.student')->where('student_course.course', $courseId)->with('user', 'personal_tutor.user', 'studentCourse', )->withCount('concerns')->get();
-        // foreach ($studentList as $student) {
-        //     return $student->student_course;
-        //     $student->student_course = array_filter($student->student_course, fn($courseS) => $courseS->id !== $course->id);
-        // }
+        
+        $studentList = Student::join('student_course', 'students.id', '=', 'student_course.student')->where('student_course.course', $courseId)->with('user', 'personal_tutor.user', 'studentCourse')->withCount('concerns')->get();
+        foreach ($studentList as $student) {
+            $student->studentCourse = $student->studentCourse->filter(function ($item) use($course) {
+                return $item->course==$course->id;
+            })->values();
+            $student->courseActivity = StudentActivity::join('activity', 'student_activity.activity', '=', 'activity.id')->where([['student', $student->id, ], ['activity.course', $courseId]])->get();
+            $student->courseAssignments = StudentAssignment::join('assignment', 'student_assignment.assignment', '=', 'assignment.id')->where([['student', $student->id, ], ['assignment.course', $courseId]])->get();
+        }
 
         return response([
             'success' => 200,
