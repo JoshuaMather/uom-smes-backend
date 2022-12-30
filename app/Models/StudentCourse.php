@@ -82,24 +82,59 @@ class StudentCourse extends Model
 
         $assignmentsForCourse = Assignment::where('course', $course)->get();
         $grade = 0;
-        $weight = 0; // need to adjust weights to just include summative
+        $weightSummative = 0; // need to adjust weights to just include summative
         $prediction = 0;
+        $currentAverageGrade = 0;
+        $count = 0;
+        $upcoming = [];
         foreach ($assignmentsForCourse as $assignment) {
             $assignmentByStudent = StudentAssignment::where('student', $student)->where('assignment', $assignment->id)->get();
-            $prediction += $assignmentByStudent[0]->grade * $assignment->engagement_weight;
+
             if(str_contains($assignment->type, '_s')){
-                $weight += $assignment->engagement_weight;
-                $grade += $assignmentByStudent[0]->grade * $assignment->engagement_weight;
+                $weightSummative += $assignment->engagement_weight;
+                if($assignmentByStudent[0]->grade===null){
+                    $grade += 0;
+                    array_push($upcoming, $assignment);
+                } else {
+                    $grade += $assignmentByStudent[0]->grade * $assignment->engagement_weight;
+                }
+            }
+
+            if($assignmentByStudent[0]->grade===null){
+                $prediction += 0;
+            } else {
+                $currentAverageGrade += $assignmentByStudent[0]->grade;
+                $count += 1; 
             }
         }
 
-        $grade = ($grade / $weight);
-        $grade = round($grade, 2);
-        $prediction = round($prediction, 2);
+        $prediction = $grade;
+        if($weightSummative!=0){
+            $grade = ($grade / $weightSummative); // scale grade - summative weights may not add to 1 if there are formative assignments
+            $grade = round($grade, 2);
+        }
+
+        if($count!=0){
+            $currentAverageGrade = ($currentAverageGrade / $count);
+            $currentAverageGrade = round($currentAverageGrade, 2);
+        }
+        // apply current grade including formative to upcoming summative
+        $upcomingPredict = 0;
+        foreach ($upcoming as $element) {
+            $upcomingPredict += $currentAverageGrade * $element->engagement_weight;
+        }
+
+        $prediction += $upcomingPredict;
+        if($weightSummative!=0){
+            $prediction = ($prediction / $weightSummative);
+            $prediction = round($prediction, 2);
+        }
 
         return [
             'predict' => $prediction,
-            'current' => $grade
+            'current' => $grade,
+            'average' => $currentAverageGrade,
+            'upcoming' => $upcoming
         ];
     }
 
