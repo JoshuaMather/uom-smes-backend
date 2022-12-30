@@ -42,15 +42,7 @@ class StudentController extends Controller
         // the student that the data is for 
         $studentId = $request->student;
         $userId = $request->user;
-        $student = Student::where('id', $studentId)->with('user', 'studentCourse.course', 'studentActivity.activity', 'studentAssignment.assignment.course', 'studentLast', 'concerns', 'personal_tutor.user')->first();
-
-        // if tutor making request append whole course grade distribution
-        $user = User::where('id', $userId)->with('tutor')->first();
-        if($user->tutor!==null) {
-            $student->studentCourse->append('grade_distribution');
-        }
-
-        // engagement
+        $student = Student::where('id', $studentId)->with('user', 'studentCourse.course', 'studentActivity.activity', 'studentAssignment.assignment', 'studentLast', 'concerns', 'personal_tutor.user')->first();
 
         return response(['student' => $student]);
     }
