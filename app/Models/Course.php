@@ -76,8 +76,11 @@ class Course extends Model
             $averageAttendance += $studentActivities->sum('attended') / count($studentActivities);
             
         }
-        $averageAttendance = $averageAttendance / count($courseActivityList);
-        $averageAttendance = number_format((float)$averageAttendance, 2);
+
+        if(count($courseActivityList)!==0){
+            $averageAttendance = $averageAttendance / count($courseActivityList);
+            $averageAttendance = number_format((float)$averageAttendance, 2);
+        }
 
         return $averageAttendance;
     }
@@ -97,11 +100,15 @@ class Course extends Model
             $averagePredictedGrade += $student->grades['predict'];
         }
 
-        $averagePredictedGrade = $averagePredictedGrade / count($studentCourse);
-        $averagePredictedGrade = number_format((float)$averagePredictedGrade, 2);
+        if(count($studentCourse)!==0){
+            $averagePredictedGrade = $averagePredictedGrade / count($studentCourse);
+            $averagePredictedGrade = number_format((float)$averagePredictedGrade, 2);
+        }
 
-        $averageCurrentGrade = $averageCurrentGrade / count($studentCourse);
-        $averageCurrentGrade = number_format((float)$averageCurrentGrade, 2);
+        if(count($studentCourse)!==0){
+            $averageCurrentGrade = $averageCurrentGrade / count($studentCourse);
+            $averageCurrentGrade = number_format((float)$averageCurrentGrade, 2);
+        }
 
         return [
             'predict' => $averagePredictedGrade,

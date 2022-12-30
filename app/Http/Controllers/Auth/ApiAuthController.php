@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Course;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -30,6 +31,8 @@ class ApiAuthController extends Controller
             unset($user->student);  
         }
 
+        $courses = Course::all();
+
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
                 $token = Str::random(60);
@@ -38,7 +41,7 @@ class ApiAuthController extends Controller
                     'api_token' => hash('sha256', $token),
                 ])->save();
         
-                $response = ['token' => $token, 'user' => $user];
+                $response = ['token' => $token, 'user' => $user, 'all_courses' => $courses];
                 return response($response, 200);
             } else {
                 $response = ["message" => "Incorrect Login Details"];

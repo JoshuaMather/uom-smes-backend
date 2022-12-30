@@ -191,10 +191,11 @@ class TutorController extends Controller
         $tutor = Tutor::where('id', $tutorId)->first();
         $course = Course::where('id', $courseId)->first();
         
-        if($course->tutor !== $tutor->id){
+        if($course->tutor !== $tutor->id && $tutor->role!='admin'){
             return response([
                 'success' => 400,
-                'error' => 'This tutor does not run this course'
+                'error' => 'This tutor does not run this course',
+                'tutor' => $tutor
             ]);
         }
         

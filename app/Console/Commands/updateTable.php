@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Activity;
 use App\Models\Assignment;
+use App\Models\Course;
 use App\Models\Student;
 use App\Models\StudentActivity;
 use App\Models\StudentAssignment;
@@ -11,8 +12,10 @@ use App\Models\StudentCourse;
 use App\Models\StudentLast;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class updateTable extends Command
 {
@@ -44,6 +47,19 @@ class updateTable extends Command
         //     User::where('id', $i)->update(array('password' => $pass));
         // }
 
+        // create studentCourse entries
+        // $students = Student::all();
+        // $courses = Course::all()->toArray();
+        // foreach ($students as $student) {
+        //     $chosenCourses = array_rand($courses, 6);
+        //     foreach ($chosenCourses as $courseIdx) {
+        //         $studentCourse = new StudentCourse();
+        //         $studentCourse->student = $student->id;
+        //         $studentCourse->course = $courses[$courseIdx]['id'];
+        //         $studentCourse->save();
+        //     }
+        // }
+
         // for each student taking a course create entries for assignment and activities 
         // $list = StudentCourse::all();
         // foreach ($list as $entry) {
@@ -53,7 +69,7 @@ class updateTable extends Command
         //     // create student activity data
         //     $activities = Activity::where('course', $course)->get();
         //     foreach ($activities as $activity) {
-        //         for ($i=1; $i < 13; $i++) { 
+        //         for ($i=1; $i < 11; $i++) { // only first 10 weeks
         //             $chance = rand(0,100);
         //             $attend = '';
         //             if($chance > 80) {
@@ -61,6 +77,7 @@ class updateTable extends Command
         //             } else {
         //                 $attend = True;
         //             }
+        //             // have some weeks not happened yet
         //             $newEntry = ['student' => $student, 'activity' => $activity->id, 'week' => $i, 'attended' => $attend];
         //             StudentActivity::insert($newEntry);
                     
@@ -69,30 +86,53 @@ class updateTable extends Command
 
         //     //create student assignment data
         //     $assignments = Assignment::where('course', $course)->get();
+        //     $date = '2022-12-04 18:00:00'; // used as current date
+
         //     foreach ($assignments as $assignment) {
         //         $chance = rand(0,100);
         //         $submitDate = '';
-        //         if($chance > 80) {
-        //             $submitDate = "2023-12-01 12:00:00"; // some future date
-        //         } else {
-        //             $submitDate = $assignment->due_date;
-        //         }
 
-        //         // chance used for more realistic distribution with less studends getting a very low or very high grade
-        //         $chance = rand(0,100);
-        //         $grade = 0;
-        //         if($chance > 80) {
-        //             $grade = mt_rand(80, 100) / 100;
-        //         } elseif ($chance < 10) {
-        //             $grade = mt_rand(0, 30) / 100;
-        //         } else {
-        //             $grade = mt_rand(40, 80) / 100;
-        //         }
+        //         $date1 = Carbon::create($date);
+        //         $date2 = Carbon::create($assignment->due_date);
+        //         $result = $date2->gt($date1);
 
-        //         $newEntry = ['student' => $student, 'assignment' => $assignment->id, 'date_submitted' => $submitDate, 'grade' => $grade];
-        //         StudentAssignment::insert($newEntry);
+        //         if($result) {
+        //             $newEntry = ['student' => $student, 'assignment' => $assignment->id, 'date_submitted' => null, 'grade' => null];
+        //             StudentAssignment::insert($newEntry);
+        //         } else {
+        //             if(Str::contains($assignment->type, 'exam')){
+        //                 if($chance > 95) {
+        //                     $submitDate = null; // didn't sit exam 
+        //                 } else {
+        //                     $submitDate = $assignment->due_date;
+        //                 }
+        //             } else{
+        //                 if($chance > 80) {
+        //                     $submitDate = "2023-12-01 12:00:00"; // some future date
+        //                 } else {
+        //                     $submitDate = $assignment->due_date;
+        //                 }
+        //             }
+
+    
+        //             // chance used for more realistic distribution with less studends getting a very low or very high grade
+        //             $chance = rand(0,100);
+        //             $grade = 0;
+        //             if($chance > 80) {
+        //                 $grade = mt_rand(80, 100) / 100;
+        //             } elseif ($chance < 10) {
+        //                 $grade = mt_rand(0, 30) / 100;
+        //             } else {
+        //                 $grade = mt_rand(40, 80) / 100;
+        //             }
+    
+        //             $newEntry = ['student' => $student, 'assignment' => $assignment->id, 'date_submitted' => $submitDate, 'grade' => $grade];
+        //             StudentAssignment::insert($newEntry);
+        //         }
         //     }
         // }
+
+
 
         // add degree
         // $list = Student::all();
@@ -186,5 +226,7 @@ class updateTable extends Command
         //     $entry->week = 12;
         //     $entry->save();
         // }
+
+        // 2022-09-26  2022-12-18
     }
 }
