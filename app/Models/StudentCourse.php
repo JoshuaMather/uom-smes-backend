@@ -26,7 +26,7 @@ class StudentCourse extends Model
         'course',
     ];
 
-    protected $appends = ['grades', 'attendance'];
+    protected $appends = ['grades', 'attendance', 'engagement'];
 
     /**
      * Get the student.
@@ -51,25 +51,46 @@ class StudentCourse extends Model
     {
         $student = $this->student;
         $course = $this->course;
+       
+        $totalAttendance = 0;
+        $attendanceEngagement = 0;
 
-        $attended = StudentActivity::join('activity', 'student_activity.activity', '=', 'activity.id')->where([
-            ['student', $student],
-            ['attended', 1],
-            ['activity.course', $course]
-        ])->count();
-        
-        $total = StudentActivity::join('activity', 'student_activity.activity', '=', 'activity.id')->where([
-            ['student', $student],
-            ['activity.course', $course]
-        ])->count();
+        $activities = Activity::where('course', $course)->get();
+        foreach ($activities as $activity) {
+            $activityAttendance = 0;
 
-        $attendance = 0;
-        if($total !== 0) {
-            $attendance = $attended / $total;
+            $attended = StudentActivity::join('activity', 'student_activity.activity', '=', 'activity.id')->where([
+                ['student', $student],
+                ['attended', 1],
+                ['activity.course', $course],
+                ['activity.id', $activity->id]
+            ])->count();
+            
+            $total = StudentActivity::join('activity', 'student_activity.activity', '=', 'activity.id')->where([
+                ['student', $student],
+                ['activity.course', $course],
+                ['activity.id', $activity->id]
+            ])->count();
+
+            if($total !== 0) {
+                $activityAttendance = $attended / $total;
+            }
+            $activityAttendanceEngagement = $activityAttendance * $activity->engagement_weight;
+
+            $totalAttendance += $activityAttendance;
+            $attendanceEngagement += $activityAttendanceEngagement;
         }
-        $attendance = round($attendance, 2);
 
-        return $attendance;
+        if(count($activities) !== 0) {
+            $totalAttendance = $totalAttendance / count($activities);
+        }
+        $attendanceEngagement = round($attendanceEngagement, 2);
+        $totalAttendance = round($totalAttendance, 2);
+
+        return [
+            'attendance' => $totalAttendance,
+            'attend_engagement' => $attendanceEngagement,
+        ];
     }
 
     /**
@@ -82,6 +103,7 @@ class StudentCourse extends Model
 
         $assignmentsForCourse = Assignment::where('course', $course)->get();
         $grade = 0;
+        $maxWeightSummative = 0;
         $weightSummative = 0; // need to adjust weights to just include summative
         $prediction = 0;
         $currentAverageGrade = 0;
@@ -96,6 +118,7 @@ class StudentCourse extends Model
                     $grade += 0;
                     array_push($upcoming, $assignment);
                 } else {
+                    $maxWeightSummative += $assignment->engagement_weight;
                     $grade += $assignmentByStudent[0]->grade * $assignment->engagement_weight;
                 }
             }
@@ -130,12 +153,25 @@ class StudentCourse extends Model
             $prediction = round($prediction, 2);
         }
 
+        $maxCurrentGrade = $maxWeightSummative / $weightSummative;
+        $maxCurrentGrade = round($maxCurrentGrade, 2);
+
         return [
             'predict' => $prediction,
             'current' => $grade,
-            'average' => $currentAverageGrade,
-            'upcoming' => $upcoming
+            'max_current' => $maxCurrentGrade,
         ];
+    }
+
+     /**
+     * Get the engagement for the student for the course.
+     */
+    public function getEngagementAttribute() 
+    {
+        $engagement = (0.4*($this->grades['current']/$this->grades['max_current'])) + (0.3 * $this->grades['predict']) + (0.3*$this->attendance['attend_engagement']);
+        $engagement = round($engagement, 2);
+
+        return $engagement;
     }
 
     /**

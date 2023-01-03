@@ -27,7 +27,7 @@ class Student extends Model
         'year',
     ];
 
-    protected $appends = ['attendance', 'grades'];
+    protected $appends = ['engagement'];
 
 
     /**
@@ -86,55 +86,50 @@ class Student extends Model
         return $this->hasMany(Concern::class, 'student');
     }
 
-    /**
-     * Get the attendance for the student.
-     */
-    public function getAttendanceAttribute() 
-    {
-        $attended = StudentActivity::where([
-            ['student', $this->id],
-            ['attended', 1]
-        ])->count();
-        $total = StudentActivity::where('student', $this->id)->count();
-
-        $attendance = 0;
-        if($total !== 0) {
-            $attendance = $attended / $total;
-        }
-        $attendance = round($attendance, 2);
-
-        return $attendance;
-    }
-
      /**
-     * Get the current and predicted grade for the student.
+     * Get the current and predicted grades, attendance and engagement score for the student.
      */
-    public function getGradesAttribute() 
+    public function getEngagementAttribute() 
     {
         $studentCourseInfo = StudentCourse::where('student', $this->id)->get();
+        $attendance = 0;
+        $attendEngagement = 0;
         $grade = 0;
+        $maxGrade = 0;
         $predict = 0;
         $engagement = 0;
 
         if(count($studentCourseInfo) !== 0) {
             foreach ($studentCourseInfo as $course) {
+                $attendance += $course->attendance['attendance'];
+                $attendEngagement += $course->attendance['attend_engagement'];
+
                 $grade += $course->grades['current'];
+                $maxGrade += $course->grades['max_current'];
                 $predict += $course->grades['predict'];
             }
+            $attendance = $attendance / count($studentCourseInfo);
+            $attendance = round($attendance, 2);
+            $attendEngagement = $attendEngagement / count($studentCourseInfo);
+            $attendEngagement = round($attendEngagement, 2);
+
             $grade = $grade / count($studentCourseInfo);
             $grade = round($grade, 2);
-
+            $maxGrade = $maxGrade / count($studentCourseInfo);
+            $maxGrade = round($maxGrade, 2);
             $predict = $predict / count($studentCourseInfo);
             $predict = round($predict, 2);
         }
 
-        $engagement = (0.4*$grade) + (0.3 * $predict) + (0.3*$this->attendance);
+        $engagement = (0.4*($grade/$maxGrade)) + (0.3 * $predict) + (0.3*$attendEngagement);
         $engagement = round($engagement, 2);
 
         return [
+            'attendance' => $attendance,
             'predict' => $predict,
             'current' => $grade,
-            'engagement' => $engagement
+            'max_current' => $maxGrade,
+            'engagement' => $engagement,
         ];
     }
 }
