@@ -199,11 +199,9 @@ class TutorController extends Controller
             ]);
         }
         
-        $studentList = Student::join('student_course', 'students.id', '=', 'student_course.student')->where('student_course.course', $courseId)->with('user', 'personal_tutor.user', 'studentCourse')->withCount('concerns')->get();
+        $studentList = Student::join('student_course', 'students.id', '=', 'student_course.student')->where('student_course.course', $courseId)->with('user', 'personal_tutor.user')->withCount('concerns')->get();
         foreach ($studentList as $student) {
-            $student->studentCourse = $student->studentCourse->filter(function ($item) use($course) {
-                return $item->course==$course->id;
-            })->values();
+            $student->studentCourse = StudentCourse::where([['student', $student->id, ], ['course', $courseId]])->get();
             $student->courseActivity = StudentActivity::join('activity', 'student_activity.activity', '=', 'activity.id')->where([['student', $student->id, ], ['activity.course', $courseId]])->get();
             $student->courseAssignments = StudentAssignment::join('assignment', 'student_assignment.assignment', '=', 'assignment.id')->where([['student', $student->id, ], ['assignment.course', $courseId]])->get();
         }
