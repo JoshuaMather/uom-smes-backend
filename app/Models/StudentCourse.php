@@ -168,8 +168,12 @@ class StudentCourse extends Model
      */
     public function getEngagementAttribute() 
     {
-        $engagement = (0.4*($this->grades['current']/$this->grades['max_current'])) + (0.3 * $this->grades['predict']) + (0.3*$this->attendance['attend_engagement']);
-        $engagement = round($engagement, 2);
+        $engagement = 0;
+        $maxCurrent = $this->grades['max_current'];
+        if($maxCurrent!=0){
+            $engagement = (0.3*($this->grades['current']/$this->grades['max_current'])) + (0.3 * $this->grades['predict']) + (0.4*$this->attendance['attend_engagement']);
+            $engagement = round($engagement, 2);
+        }
 
         return $engagement;
     }

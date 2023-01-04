@@ -101,8 +101,9 @@ class Student extends Model
 
         if(count($studentCourseInfo) !== 0) {
             foreach ($studentCourseInfo as $course) {
-                $attendance += $course->attendance['attendance'];
-                $attendEngagement += $course->attendance['attend_engagement'];
+                $attendanceData = $course->attendance;
+                $attendance += $attendanceData['attendance'];
+                $attendEngagement += $attendanceData['attend_engagement'];
 
                 $grade += $course->grades['current'];
                 $maxGrade += $course->grades['max_current'];
@@ -121,7 +122,7 @@ class Student extends Model
             $predict = round($predict, 2);
         }
 
-        $engagement = (0.4*($grade/$maxGrade)) + (0.3 * $predict) + (0.3*$attendEngagement);
+        $engagement = (0.3*($grade/$maxGrade)) + (0.3 * $predict) + (0.4*$attendEngagement);
         $engagement = round($engagement, 2);
 
         return [
