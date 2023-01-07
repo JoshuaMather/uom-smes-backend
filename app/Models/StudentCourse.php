@@ -104,10 +104,10 @@ class StudentCourse extends Model
         $assignmentsForCourse = Assignment::where('course', $course)->get();
         $grade = 0;
         $maxWeightSummative = 0;
+        $maxWeightSF = 0;
         $weightSummative = 0; // need to adjust weights to just include summative
         $prediction = 0;
         $currentAverageGrade = 0;
-        $count = 0;
         $upcoming = [];
         foreach ($assignmentsForCourse as $assignment) {
             $assignmentByStudent = StudentAssignment::where('student', $student)->where('assignment', $assignment->id)->get();
@@ -126,8 +126,8 @@ class StudentCourse extends Model
             if($assignmentByStudent[0]->grade===null){
                 $prediction += 0;
             } else {
-                $currentAverageGrade += $assignmentByStudent[0]->grade;
-                $count += 1; 
+                $maxWeightSF += $assignment->engagement_weight;
+                $currentAverageGrade += $assignmentByStudent[0]->grade * $assignment->engagement_weight;
             }
         }
 
@@ -137,10 +137,11 @@ class StudentCourse extends Model
             $grade = round($grade, 2);
         }
 
-        if($count!=0){
-            $currentAverageGrade = ($currentAverageGrade / $count);
+        if($maxWeightSF!=0){
+            $currentAverageGrade = ($currentAverageGrade / $maxWeightSF); // scale average grade based on how many formative an summative exams done
             $currentAverageGrade = round($currentAverageGrade, 2);
         }
+
         // apply current grade including formative to upcoming summative
         $upcomingPredict = 0;
         foreach ($upcoming as $element) {
