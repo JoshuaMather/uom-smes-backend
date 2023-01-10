@@ -122,8 +122,11 @@ class Student extends Model
             $predict = round($predict, 2);
         }
 
-        $engagement = (0.3*($grade/$maxGrade)) + (0.3 * $predict) + (0.4*$attendEngagement);
-        $engagement = round($engagement, 2);
+        if($maxGrade!=0) {
+            $engagement = (0.3*($grade/$maxGrade)) + (0.3 * $predict) + (0.4*$attendEngagement);
+            $engagement = round($engagement, 2);
+
+        }
 
         return [
             'attendance' => $attendance,

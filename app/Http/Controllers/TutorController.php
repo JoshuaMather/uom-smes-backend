@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Assignment;
 use App\Models\Concern;
 use App\Models\Course;
 use App\Models\Student;
@@ -276,6 +277,55 @@ class TutorController extends Controller
             'students' => $studentList,
             'course' => $course,
             'distribution' => $distribution
+        ]);
+    }
+
+    /**
+     * Get assignment info and relating course info and students for tutor.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getTutorCourseAssignment(Request $request)
+    {
+        $tutorId = $request->tutor;
+        $assignmentId = $request->assignment;
+        
+        $tutor = Tutor::where('id', $tutorId)->first();
+        $assignment = Assignment::where('id', $assignmentId)->first();
+        $course = Course::where('id', $assignment->course)->first();
+
+
+        if($course->tutor !== $tutor->id && $tutor->role!='admin'){
+            return response([
+                'success' => 400,
+                'error' => 'This tutor does not run this course',
+                'tutor' => $tutor
+            ]);
+        }
+
+        $studentList = Student::join('student_assignment', 'students.id', '=', 'student_assignment.student')->where('student_assignment.assignment', $assignmentId)->with('user', 'personal_tutor.user')->get();
+
+        $assignments = Assignment::where('course', $course->id)->get();
+        $summativeWeight = 0;
+        foreach ($assignments as $a) {
+            if(str_contains($a->type, '_s')){
+                $summativeWeight += $a->engagement_weight;
+            }
+        }
+        $gradeWeight = 0;
+        if($summativeWeight != 0) {
+            $gradeWeight = $assignment->engagement_weight / $summativeWeight;
+        };
+        $assignment->gradeWeight = $gradeWeight;
+        $assignment->gradeWeight = round($assignment->gradeWeight, 2);
+
+        // average grade
+        // distribution
+
+        return response([
+            'success' => 200,
+            'students' => $studentList,
+            'assignment' => $assignment,
         ]);
     }
 }

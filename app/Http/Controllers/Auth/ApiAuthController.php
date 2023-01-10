@@ -23,7 +23,7 @@ class ApiAuthController extends Controller
         }
 
 
-        $user = User::where('username', $request->username)->with('tutor', 'tutor.course', 'student')->first();
+        $user = User::where('username', $request->username)->with('tutor', 'tutor.course.assignments', 'student')->first();
         // only have student or tutor
         if($user->tutor===null){
             unset($user->tutor);
@@ -31,7 +31,7 @@ class ApiAuthController extends Controller
             unset($user->student);  
         }
 
-        $courses = Course::all();
+        $courses = Course::with('assignments')->get();
 
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
