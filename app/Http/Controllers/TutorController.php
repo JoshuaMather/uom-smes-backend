@@ -319,13 +319,55 @@ class TutorController extends Controller
         $assignment->gradeWeight = $gradeWeight;
         $assignment->gradeWeight = round($assignment->gradeWeight, 2);
 
-        // average grade
-        // distribution
+        $averageGrade = StudentAssignment::where('assignment', $assignmentId)->pluck('grade')->avg();
+        $assignment->averageGrade = $averageGrade;
+        $assignment->averageGrade = round($assignment->averageGrade, 2);
+
+        
+        $distribution = [];
+        $gradeDist = [0,0,0,0,0,0,0,0,0,0];
+        $gradesList = StudentAssignment::where('assignment', $assignmentId)->pluck('grade');
+        
+        foreach ($gradesList as $gradeVal) {
+            if($gradeVal>=0 &&$gradeVal<=0.1) {
+                $gradeDist[0] += 1;
+            } else if($gradeVal>0.1 && $gradeVal<=0.2) {
+                $gradeDist[1] += 1;
+            } else if($gradeVal>0.2 && $gradeVal<=0.3) {
+                $gradeDist[2] += 1;
+            }  else if($gradeVal>0.3 && $gradeVal<=0.4) {
+                $gradeDist[3] += 1;
+            }  else if($gradeVal>0.4 && $gradeVal<=0.5) {
+                $gradeDist[4] += 1;
+            }  else if($gradeVal>0.5 && $gradeVal<=0.6) {
+                $gradeDist[5] += 1;
+            }  else if($gradeVal>0.6 && $gradeVal<=0.7) {
+                $gradeDist[6] += 1;
+            }  else if($gradeVal>0.7 && $gradeVal<=0.8) {
+                $gradeDist[7] += 1;
+            }  else if($gradeVal>0.8 && $gradeVal<=0.9) {
+                $gradeDist[8] += 1;
+            }  else if($gradeVal>0.9 && $gradeVal<=1) {
+                $gradeDist[9] += 1;
+            }     
+        }
+
+        array_push($distribution, ['label' => '0-10', 'grade' => $gradeDist[0]]);
+        array_push($distribution, ['label' => '11-20', 'grade' => $gradeDist[1]]);
+        array_push($distribution, ['label' => '21-30', 'grade' => $gradeDist[2]]);
+        array_push($distribution, ['label' => '31-40', 'grade' => $gradeDist[3]]);
+        array_push($distribution, ['label' => '41-50', 'grade' => $gradeDist[4]]);
+        array_push($distribution, ['label' => '51-60', 'grade' => $gradeDist[5]]);
+        array_push($distribution, ['label' => '61-70', 'grade' => $gradeDist[6]]);
+        array_push($distribution, ['label' => '71-80', 'grade' => $gradeDist[7]]);
+        array_push($distribution, ['label' => '81-90', 'grade' => $gradeDist[8]]);
+        array_push($distribution, ['label' => '91-100', 'grade' => $gradeDist[9]]);
 
         return response([
             'success' => 200,
             'students' => $studentList,
             'assignment' => $assignment,
+            'distribution' => $distribution
         ]);
     }
 }
