@@ -14,6 +14,7 @@ use App\Models\TutorRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class TutorController extends Controller
 {
@@ -94,6 +95,20 @@ class TutorController extends Controller
             $newTutorRequest->role = $request->role;
         }
         $newTutorRequest->save();
+
+        $data = array(
+            'username'=>$request->username,
+            'email'=>$request->email,
+            'name'=>$request->name,
+            'role'=>$request->role,
+            'year'=>$request->year
+        );
+   
+        Mail::send(['text'=>'register-tutor-mail'], $data, function($message) {
+            $message->to('joshua.mather@student.manchester.ac.uk', 'TEST')->subject
+                ('UOM SMES - New tutor requested');
+            $message->from('joshua.mather@student.manchester.ac.uk','TEST');
+        });
 
         return response(['success' => 200]);
     }
