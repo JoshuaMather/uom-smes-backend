@@ -378,11 +378,40 @@ class TutorController extends Controller
         array_push($distribution, ['label' => '81-90', 'grade' => $gradeDist[8]]);
         array_push($distribution, ['label' => '91-100', 'grade' => $gradeDist[9]]);
 
+        // stats
+        $min = min($gradesList->toArray());
+        $max = max($gradesList->toArray());
+
+        $mean = array_sum($gradesList->toArray())/count($gradesList->toArray());
+        $mean = round($mean, 2);
+
+        $median = $gradesList->median();
+
+        $mode = $gradesList->mode();
+
+        $variance = 0.0;
+        foreach ($gradesList->toArray() as $item) {
+            $variance += pow(abs($item - $mean), 2);
+        }
+        $variance = round($variance, 2);
+
+        $sd = sqrt($variance);
+        $sd = round($sd, 2);
+
         return response([
             'success' => 200,
             'students' => $studentList,
             'assignment' => $assignment,
-            'distribution' => $distribution
+            'distribution' => $distribution,
+            'stats' => [
+                'min' => $min,
+                'max' => $max,
+                'mean' => $mean,
+                'median' => $median,
+                'mode' => $mode[0],
+                'variance' => $variance,
+                'sd' => $sd
+            ]
         ]);
     }
 }
