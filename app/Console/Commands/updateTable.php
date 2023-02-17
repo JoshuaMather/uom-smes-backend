@@ -228,5 +228,28 @@ class updateTable extends Command
         // }
 
         // 2022-09-26  2022-12-18
+
+
+
+        // set better late submit dates
+        // 2023-12-01 12:00:00	
+        // $assignments = StudentAssignment::all();
+        // foreach ($assignments as $assignment) {
+        //     if($assignment->date_submitted == "2023-12-01 12:00:00"){
+        //         $assignmentData = Assignment::find($assignment->assignment);
+        //         $assignmentDueDate = $assignmentData->due_date;
+        //         // $today = Carbon::createFromFormat('d/m/Y H:i:s',  '19/02/2019 00:00:00'); 
+        //         $dueDate = Carbon::createFromFormat('Y-m-d H:i:s', $assignmentDueDate);
+        //         $days_late = rand(1, 10);
+        //         $newDate = Carbon::createFromFormat('Y-m-d H:i:s', $assignmentDueDate)->addDays($days_late);
+        //         // error_log($days_late);
+        //         // error_log($dueDate);
+        //         // error_log($newDate);
+
+        //         $assignment->date_submitted = $newDate;
+        //         $assignment->save();
+        //     }
+        // }
+
     }
 }
