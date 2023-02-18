@@ -225,10 +225,13 @@ class TutorController extends Controller
         $distribution = [];
         $current = [0,0,0,0,0,0,0,0,0,0];
         $predicted = [0,0,0,0,0,0,0,0,0,0];
+        $allCurrent = [];
+        $allPredicted = [];
         $studentCourses = StudentCourse::where('course', $courseId)->get();
         
         foreach ($studentCourses as $courseA) {
             $currentG = $courseA->grades['current'];
+            array_push($allCurrent, $currentG);
             if($currentG>=0 &&$currentG<=0.1) {
                 $current[0] += 1;
             } else if($currentG>0.1 && $currentG<=0.2) {
@@ -252,6 +255,7 @@ class TutorController extends Controller
             }     
 
             $predictG = $courseA->grades['predict'];
+            array_push($allPredicted, $predictG);
             if($predictG>=0 &&$predictG<=0.1) {
                 $predicted[0] += 1;
             } else if($predictG>0.1 && $predictG<=0.2) {
@@ -285,13 +289,99 @@ class TutorController extends Controller
         array_push($distribution, ['label' => '71-80', 'current' => $current[7], 'predicted' => $predicted[7]]);
         array_push($distribution, ['label' => '81-90', 'current' => $current[8], 'predicted' => $predicted[8]]);
         array_push($distribution, ['label' => '91-100', 'current' => $current[9], 'predicted' => $predicted[9]]);
+
+        // stats
+        $minCurrent = min($allCurrent);
+        $maxCurrent = max($allCurrent);
+
+        $meanCurrent = array_sum($allCurrent)/count($allCurrent);
+        $meanCurrent = round($meanCurrent, 2);
+
+        $sortedCurrent = $allCurrent;
+        sort($sortedCurrent);
+        $count = count($sortedCurrent);
+        $middleval = floor(($count-1)/2);
+        if ($count % 2) {
+            $medianCurrent = $sortedCurrent[$middleval];
+        } else {
+            $low = $sortedCurrent[$middleval];
+            $high = $sortedCurrent[$middleval+1];
+            $medianCurrent = (($low+$high)/2);
+        }
+
+        $alterCurrent = $allCurrent;
+        $alterCurrent = array_map(function($el) { return (int)($el * 100); }, $alterCurrent);
+        $values = array_count_values($alterCurrent);
+        $modeCurrent = array_search(max($values), $values);
+        $modeCurrent = $modeCurrent / 100;
+
+        $varianceCurrent = 0.0;
+        foreach ($allCurrent as $item) {
+            $varianceCurrent += pow(abs($item - $meanCurrent), 2);
+        }
+        $varianceCurrent = round($varianceCurrent, 2);
+
+        $sdCurrent = sqrt($varianceCurrent);
+        $sdCurrent = round($sdCurrent, 2);
+
+
+        $minPredicted = min($allPredicted);
+        $maxPredicted = max($allPredicted);
+
+        $meanPredicted = array_sum($allPredicted)/count($allPredicted);
+        $meanPredicted = round($meanPredicted, 2);
+
+        $sortedPredicted = $allPredicted;
+        sort($sortedPredicted);
+        $count = count($sortedPredicted);
+        $middleval = floor(($count-1)/2);
+        if ($count % 2) {
+            $medianPredicted = $sortedPredicted[$middleval];
+        } else {
+            $low = $sortedPredicted[$middleval];
+            $high = $sortedPredicted[$middleval+1];
+            $medianPredicted = (($low+$high)/2);
+        }
+
+        $alterPredicted = $allPredicted;
+        $alterPredicted = array_map(function($el) { return (int)($el * 100); }, $alterPredicted);
+        $values = array_count_values($alterPredicted);
+        $modePredicted = array_search(max($values), $values);
+        $modePredicted = $modePredicted / 100;
+
+        $variancePredicted = 0.0;
+        foreach ($allPredicted as $item) {
+            $variancePredicted += pow(abs($item - $meanPredicted), 2);
+        }
+        $variancePredicted = round($variancePredicted, 2);
+
+        $sdPredicted = sqrt($variancePredicted);
+        $sdPredicted = round($sdPredicted, 2);
         
 
         return response([
             'success' => 200,
             'students' => $studentList,
             'course' => $course,
-            'distribution' => $distribution
+            'distribution' => $distribution,
+            'statsCurrent' => [
+                'minCurrent' => $minCurrent,
+                'maxCurrent' => $maxCurrent,
+                'meanCurrent' => $meanCurrent,
+                'medianCurrent' => $medianCurrent,
+                'modeCurrent' => $modeCurrent,
+                'varianceCurrent' => $varianceCurrent,
+                'sdCurrent' => $sdCurrent
+            ],
+            'statsPredicted' => [
+                'minPredicted' => $minPredicted,
+                'maxPredicted' => $maxPredicted,
+                'meanPredicted' => $meanPredicted,
+                'medianPredicted' => $medianPredicted,
+                'modePredicted' => $modePredicted,
+                'variancePredicted' => $variancePredicted,
+                'sdPredicted' => $sdPredicted
+            ]
         ]);
     }
 
