@@ -6,6 +6,7 @@ use App\Models\Student;
 use App\Models\Tutor;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class StudentController extends Controller
 {
@@ -45,5 +46,36 @@ class StudentController extends Controller
         $student = Student::where('id', $studentId)->with('user', 'studentCourse.course', 'studentActivity.activity', 'studentAssignment.assignment', 'studentLast', 'concerns', 'personal_tutor.user')->first();
 
         return response(['student' => $student]);
+    }
+
+    /**
+     * Email issue reported by student.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function reportIssue(Request $request)
+    {
+        // the student that the data is for 
+        $studentId = $request->student;
+        $issue = $request->issue;
+        $student = Student::where('id', $studentId)->with('user', 'personal_tutor.user')->first();
+        $user = User::where('id', $student->user)->first();
+        $personalTutor = User::where('id', $student->personal_tutor)->first();
+
+        $data = array(
+            'issue'=>$issue,
+            'student_name'=>$user->name,
+            'student_username'=>$user->name,
+            'student_email'=>$user->email,
+            'personal_tutor_email'=>$personalTutor->email
+        );
+
+        Mail::send(['text'=>'student-issue-mail'], $data, function($message) {
+            $message->to('joshua.mather@student.manchester.ac.uk', 'TEST')->subject
+                ('UOM SMES - Student Reported Issue');
+            $message->from('joshua.mather@student.manchester.ac.uk','TEST');
+        });
+
+        return response(['success' => 200]);
     }
 }
