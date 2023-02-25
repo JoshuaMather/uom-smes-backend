@@ -12,6 +12,7 @@ use App\Models\StudentCourse;
 use App\Models\Tutor;
 use App\Models\TutorRequest;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -42,6 +43,7 @@ class TutorController extends Controller
         $newConcern->tutor = $request->tutor;
         $newConcern->student = $request->student;
         $newConcern->concern = $request->concern;
+        $newConcern->date_reported = Carbon::now();
         $newConcern->save();
 
         return response(['success' => 200]);
@@ -56,7 +58,7 @@ class TutorController extends Controller
     {
         $studentId = $request->student;
 
-        $concernsList = Concern::where('student', $studentId)->with('tutor.user')->get();
+        $concernsList = Concern::where('student', $studentId)->with('tutor.user')->orderBy('date_reported','DESC')->get();
 
         return response(['concerns' => $concernsList]);
     }

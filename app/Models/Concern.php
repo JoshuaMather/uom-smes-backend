@@ -25,6 +25,7 @@ class Concern extends Model
         'tutor',
         'student',
         'concern',
+        'date_reported'
     ];
 
     /**
