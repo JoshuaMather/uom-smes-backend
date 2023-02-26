@@ -313,9 +313,30 @@ class TutorController extends Controller
 
         $alterCurrent = $allCurrent;
         $alterCurrent = array_map(function($el) { return (int)($el * 100); }, $alterCurrent);
-        $values = array_count_values($alterCurrent);
-        $modeCurrent = array_search(max($values), $values);
-        $modeCurrent = $modeCurrent / 100;
+        
+        $modeCurrent = '';
+        $modeRangeCurrent = array_keys($current, max($current));
+        if($modeRangeCurrent[0] == 0) {
+            $modeCurrent = '0-10';
+        } elseif($modeRangeCurrent[0] == 1) {
+            $modeCurrent = '11-20';
+        } elseif($modeRangeCurrent[0] == 2) {
+            $modeCurrent = '21-30';
+        } elseif($modeRangeCurrent[0] == 3) {
+            $modeCurrent = '31-40';
+        } elseif($modeRangeCurrent[0] == 4) {
+            $modeCurrent = '41-50';
+        } elseif($modeRangeCurrent[0] == 5) {
+            $modeCurrent = '51-60';
+        } elseif($modeRangeCurrent[0] == 6) {
+            $modeCurrent = '61-70';
+        } elseif($modeRangeCurrent[0] == 7) {
+            $modeCurrent = '71-80';
+        } elseif($modeRangeCurrent[0] == 8) {
+            $modeCurrent = '81-90';
+        } elseif($modeRangeCurrent[0] == 9) {
+            $modeCurrent = '91-100';
+        }
 
         $varianceCurrent = 0.0;
         foreach ($allCurrent as $item) {
@@ -347,9 +368,30 @@ class TutorController extends Controller
 
         $alterPredicted = $allPredicted;
         $alterPredicted = array_map(function($el) { return (int)($el * 100); }, $alterPredicted);
-        $values = array_count_values($alterPredicted);
-        $modePredicted = array_search(max($values), $values);
-        $modePredicted = $modePredicted / 100;
+
+        $modePredicted = '';
+        $modeRangePredicted = array_keys($predicted, max($predicted));
+        if($modeRangePredicted[0] == 0) {
+            $modePredicted = '0-10';
+        } elseif($modeRangePredicted[0] == 1) {
+            $modePredicted = '11-20';
+        } elseif($modeRangePredicted[0] == 2) {
+            $modePredicted = '21-30';
+        } elseif($modeRangePredicted[0] == 3) {
+            $modePredicted = '31-40';
+        } elseif($modeRangePredicted[0] == 4) {
+            $modePredicted = '41-50';
+        } elseif($modeRangePredicted[0] == 5) {
+            $modePredicted = '51-60';
+        } elseif($modeRangePredicted[0] == 6) {
+            $modePredicted = '61-70';
+        } elseif($modeRangePredicted[0] == 7) {
+            $modePredicted = '71-80';
+        } elseif($modeRangePredicted[0] == 8) {
+            $modePredicted = '81-90';
+        } elseif($modeRangePredicted[0] == 9) {
+            $modePredicted = '91-100';
+        }
 
         $variancePredicted = 0.0;
         foreach ($allPredicted as $item) {
@@ -479,7 +521,30 @@ class TutorController extends Controller
 
         $median = $gradesList->median();
 
-        $mode = $gradesList->mode();
+        $mode = '';
+        $modeRange = array_keys($gradeDist, max($gradeDist));
+        if($modeRange[0] == 0) {
+            $mode = '0-10';
+        } elseif($modeRange[0] == 1) {
+            $mode = '11-20';
+        } elseif($modeRange[0] == 2) {
+            $mode = '21-30';
+        } elseif($modeRange[0] == 3) {
+            $mode = '31-40';
+        } elseif($modeRange[0] == 4) {
+            $mode = '41-50';
+        } elseif($modeRange[0] == 5) {
+            $mode = '51-60';
+        } elseif($modeRange[0] == 6) {
+            $mode = '61-70';
+        } elseif($modeRange[0] == 7) {
+            $mode = '71-80';
+        } elseif($modeRange[0] == 8) {
+            $mode = '81-90';
+        } elseif($modeRange[0] == 9) {
+            $mode = '91-100';
+        }
+
 
         $variance = 0.0;
         foreach ($gradesList->toArray() as $item) {
@@ -500,7 +565,7 @@ class TutorController extends Controller
                 'max' => $max,
                 'mean' => $mean,
                 'median' => $median,
-                'mode' => $mode[0],
+                'mode' => $mode,
                 'variance' => $variance,
                 'sd' => $sd
             ]
