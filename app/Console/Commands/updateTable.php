@@ -251,5 +251,16 @@ class updateTable extends Command
         //     }
         // }
 
+
+        // set some assignments to null
+        // $assignments = StudentAssignment::all();
+        // foreach ($assignments as $assignment) {
+        //     $chance = rand(0,100);
+        //     if($chance > 97) {
+        //         $assignment->grade = null; 
+        //         $assignment->save();
+        //     }
+        // }
+
     }
 }
