@@ -472,6 +472,11 @@ class TutorController extends Controller
         $assignment->averageGrade = $averageGrade;
         $assignment->averageGrade = round($assignment->averageGrade, 2);
 
+        $notMarked = StudentAssignment::where('assignment', $assignmentId)->whereNull('grade')->count();
+        $total = StudentAssignment::where('assignment', $assignmentId)->count();
+        $marked = $total - $notMarked;
+
+
         
         $distribution = [];
         $gradeDist = [0,0,0,0,0,0,0,0,0,0];
@@ -568,7 +573,9 @@ class TutorController extends Controller
                 'mode' => $mode,
                 'variance' => $variance,
                 'sd' => $sd
-            ]
+            ],
+            'marked' => $marked,
+            'total' => $total
         ]);
     }
 }
