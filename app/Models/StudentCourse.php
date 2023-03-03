@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -119,7 +120,19 @@ class StudentCourse extends Model
                     array_push($upcoming, $assignment);
                 } else {
                     $maxWeightSummative += $assignment->engagement_weight;
-                    $grade += $assignmentByStudent[0]->grade * $assignment->engagement_weight;
+
+                    $gradeTemp = $assignmentByStudent[0]->grade;
+                    $submit = new Carbon($assignmentByStudent[0]->date_submitted);
+                    $due = new Carbon($assignment->due_date);
+                    if($submit > $due){
+                        $diffDays = abs($due->diffInDays($submit)); 
+            
+                        $gradeTemp = ($gradeTemp) - ($gradeTemp * (($diffDays*10)/100));
+                        if($gradeTemp < 0) {
+                            $gradeTemp = 0;
+                        }
+                    }
+                    $grade += $gradeTemp * $assignment->engagement_weight;
                 }
             }
 
