@@ -110,6 +110,7 @@ class StudentCourse extends Model
         $prediction = 0;
         $currentAverageGrade = 0;
         $upcoming = [];
+        $reduced = false;
         foreach ($assignmentsForCourse as $assignment) {
             $assignmentByStudent = StudentAssignment::where('student', $student)->where('assignment', $assignment->id)->get();
 
@@ -125,6 +126,7 @@ class StudentCourse extends Model
                     $submit = new Carbon($assignmentByStudent[0]->date_submitted);
                     $due = new Carbon($assignment->due_date);
                     if($submit > $due){
+                        $reduced = true;
                         $diffDays = abs($due->diffInDays($submit)); 
             
                         $gradeTemp = ($gradeTemp) - ($gradeTemp * (($diffDays*10)/100));
@@ -174,6 +176,7 @@ class StudentCourse extends Model
             'predict' => $prediction,
             'current' => $grade,
             'max_current' => $maxCurrentGrade,
+            'grade_reduced' => $reduced
         ];
     }
 

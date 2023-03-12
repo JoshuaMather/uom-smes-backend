@@ -98,6 +98,7 @@ class Student extends Model
         $maxGrade = 0;
         $predict = 0;
         $engagement = 0;
+        $reduced = false;
 
         if(count($studentCourseInfo) !== 0) {
             foreach ($studentCourseInfo as $course) {
@@ -105,6 +106,9 @@ class Student extends Model
                 $attendance += $attendanceData['attendance'];
                 $attendEngagement += $attendanceData['attend_engagement'];
 
+                if($course->grades['grade_reduced'] == true) {
+                    $reduced = true;
+                }
                 $grade += $course->grades['current'];
                 $maxGrade += $course->grades['max_current'];
                 $predict += $course->grades['predict'];
@@ -134,6 +138,7 @@ class Student extends Model
             'current' => $grade,
             'max_current' => $maxGrade,
             'engagement' => $engagement,
+            'grade_reduced' => $reduced
         ];
     }
 }
