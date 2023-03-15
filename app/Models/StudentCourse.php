@@ -104,6 +104,7 @@ class StudentCourse extends Model
 
         $assignmentsForCourse = Assignment::where('course', $course)->get();
         $grade = 0;
+        $grade_no_reduction = 0;
         $maxWeightSummative = 0;
         $maxWeightSF = 0;
         $weightSummative = 0; // need to adjust weights to just include summative
@@ -118,6 +119,7 @@ class StudentCourse extends Model
                 $weightSummative += $assignment->engagement_weight;
                 if($assignmentByStudent[0]->grade===null){
                     $grade += 0;
+                    $grade_no_reduction += 0;
                     array_push($upcoming, $assignment);
                 } else {
                     $maxWeightSummative += $assignment->engagement_weight;
@@ -125,6 +127,7 @@ class StudentCourse extends Model
                     $gradeTemp = $assignmentByStudent[0]->grade;
                     $submit = new Carbon($assignmentByStudent[0]->date_submitted);
                     $due = new Carbon($assignment->due_date);
+                    $grade_no_reduction += $gradeTemp * $assignment->engagement_weight;
                     if($submit > $due){
                         $reduced = true;
                         $diffDays = abs($due->diffInDays($submit)); 
@@ -135,6 +138,7 @@ class StudentCourse extends Model
                         }
                     }
                     $grade += $gradeTemp * $assignment->engagement_weight;
+                    
                 }
             }
 
@@ -150,6 +154,8 @@ class StudentCourse extends Model
         if($weightSummative!=0){
             $grade = ($grade / $weightSummative); // scale grade - summative weights may not add to 1 if there are formative assignments
             $grade = round($grade, 2);
+            $grade_no_reduction = ($grade_no_reduction / $weightSummative); // scale grade - summative weights may not add to 1 if there are formative assignments
+            $grade_no_reduction = round($grade_no_reduction, 2);
         }
 
         if($maxWeightSF!=0){
@@ -176,7 +182,8 @@ class StudentCourse extends Model
             'predict' => $prediction,
             'current' => $grade,
             'max_current' => $maxCurrentGrade,
-            'grade_reduced' => $reduced
+            'grade_reduced' => $reduced,
+            'grade_before_reduction' => $grade_no_reduction,
         ];
     }
 

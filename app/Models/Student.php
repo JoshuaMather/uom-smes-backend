@@ -95,6 +95,7 @@ class Student extends Model
         $attendance = 0;
         $attendEngagement = 0;
         $grade = 0;
+        $gradeBeforeReduction = 0;
         $maxGrade = 0;
         $predict = 0;
         $engagement = 0;
@@ -110,6 +111,7 @@ class Student extends Model
                     $reduced = true;
                 }
                 $grade += $course->grades['current'];
+                $gradeBeforeReduction += $course->grades['grade_before_reduction'];
                 $maxGrade += $course->grades['max_current'];
                 $predict += $course->grades['predict'];
             }
@@ -120,6 +122,8 @@ class Student extends Model
 
             $grade = $grade / count($studentCourseInfo);
             $grade = round($grade, 2);
+            $gradeBeforeReduction = $gradeBeforeReduction / count($studentCourseInfo);
+            $gradeBeforeReduction = round($gradeBeforeReduction, 2);
             $maxGrade = $maxGrade / count($studentCourseInfo);
             $maxGrade = round($maxGrade, 2);
             $predict = $predict / count($studentCourseInfo);
@@ -138,7 +142,8 @@ class Student extends Model
             'current' => $grade,
             'max_current' => $maxGrade,
             'engagement' => $engagement,
-            'grade_reduced' => $reduced
+            'grade_reduced' => $reduced,
+            'grade_before_reduction' => $gradeBeforeReduction,
         ];
     }
 }
