@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Assignment;
 use App\Models\Concern;
 use App\Models\Course;
+use App\Models\MitCirc;
 use App\Models\Student;
 use App\Models\StudentActivity;
 use App\Models\StudentAssignment;
+use App\Models\StudentAssignmentMitCirc;
 use App\Models\StudentCourse;
 use App\Models\Tutor;
 use App\Models\TutorRequest;
@@ -453,6 +455,20 @@ class TutorController extends Controller
         }
 
         $studentList = Student::join('student_assignment', 'students.id', '=', 'student_assignment.student')->where('student_assignment.assignment', $assignmentId)->with('user', 'personal_tutor.user')->get();
+        foreach ($studentList as $student) {
+           $sId = $student->student;
+           $aId = $student->assignment;
+           $studentAssignment = StudentAssignment::where([
+            ['student', $sId],
+            ['assignment', $aId]
+           ])->get();
+           $samc = StudentAssignmentMitCirc::where('student_assignment', $studentAssignment[0]->id)->get();
+           $mitCircList = [];
+           foreach ($samc as $a) {
+            array_push($mitCircList, MitCirc::where('id', $a->mit_circ)->get()[0]);
+           }
+           $student->mitcircs = $mitCircList;
+        }
 
         $assignments = Assignment::where('course', $course->id)->get();
         $summativeWeight = 0;

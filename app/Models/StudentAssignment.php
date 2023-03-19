@@ -43,4 +43,31 @@ class StudentAssignment extends Model
     {
         return $this->belongsTo(Assignment::class, 'assignment');
     }
+
+    /**
+     * Get the assignment mit circ.
+     */
+    public function studentAssignmentMitCirc()
+    {
+        return $this->hasMany(StudentAssignmentMitCirc::class, 'student_assignment');
+    }
+
+    /**
+     * Get the assignment mit circ.
+     */
+    public function getStudentAssignmentMitCircAttribute()
+    {
+        return $this->id;
+        $mitcirc = null;
+        try {
+            MitCirc::where('student_assignment', $this->id)->get();
+        } catch (\Throwable $th) {
+            return $mitcirc;
+        }
+        if(MitCirc::where('student_assignment', $this->id)->get()){
+            $mitcirc = MitCirc::where('student_assignment', $this->id)->get();
+
+        }
+        return $mitcirc;
+    }
 }

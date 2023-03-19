@@ -112,6 +112,8 @@ class StudentCourse extends Model
         $currentAverageGrade = 0;
         $upcoming = [];
         $reduced = false;
+        $mitCircs = [];
+        $c3 = null;
         foreach ($assignmentsForCourse as $assignment) {
             $assignmentByStudent = StudentAssignment::where('student', $student)->where('assignment', $assignment->id)->get();
 
@@ -129,13 +131,19 @@ class StudentCourse extends Model
                     $due = new Carbon($assignment->due_date);
                     $grade_no_reduction += $gradeTemp * $assignment->engagement_weight;
                     if($submit > $due){
-                        $reduced = true;
-                        $diffDays = abs($due->diffInDays($submit)); 
-            
-                        $gradeTemp = ($gradeTemp) - ($gradeTemp * (($diffDays*10)/100));
-                        if($gradeTemp < 0) {
-                            $gradeTemp = 0;
-                        }
+                        // check for c3 mit circ
+                        // $c3 = StudentAssignmentMitCirc::where('student_assignment', $assignmentByStudent[0]->id)->where('mit_circ', 1)->get();
+                        // if($c3) {
+                        //     array_push($mitCircs, 'C3 - Remove late penalty');
+                        // } else {
+                            $reduced = true;
+                            $diffDays = abs($due->diffInDays($submit)); 
+                
+                            $gradeTemp = ($gradeTemp) - ($gradeTemp * (($diffDays*10)/100));
+                            if($gradeTemp < 0) {
+                                $gradeTemp = 0;
+                            }
+                        // }
                     }
                     $grade += $gradeTemp * $assignment->engagement_weight;
                     
@@ -184,6 +192,7 @@ class StudentCourse extends Model
             'max_current' => $maxCurrentGrade,
             'grade_reduced' => $reduced,
             'grade_before_reduction' => $grade_no_reduction,
+            'mit_circs' => $c3
         ];
     }
 

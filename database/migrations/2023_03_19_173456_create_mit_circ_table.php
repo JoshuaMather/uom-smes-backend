@@ -13,8 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('course', function (Blueprint $table) {
-            // $table->foreignId('year_info')->constrained('year_info')->onUpdate('cascade')->onDelete('cascade');
+        Schema::create('mit_circ', function (Blueprint $table) {
+            $table->id();
+            $table->string('type');
+            $table->string('description');
+            $table->timestamps();
         });
     }
 
@@ -25,8 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('course', function (Blueprint $table) {
-            // $table->dropColumn('year_info');
-        });
+        Schema::dropIfExists('mit_circ');
     }
 };
