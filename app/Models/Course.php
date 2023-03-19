@@ -61,6 +61,14 @@ class Course extends Model
         return $this->hasMany(Assignment::class, 'course');
     }
 
+    /**
+     * Get assignments for the course.
+     */
+    public function year_info()
+    {
+        return $this->belongsToMany(Assignment::class);
+    }
+
      /**
      * Get the average attendance for the course.
      */
