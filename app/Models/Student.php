@@ -100,6 +100,7 @@ class Student extends Model
         $predict = 0;
         $engagement = 0;
         $reduced = false;
+        $mitCircs = false;
 
         if(count($studentCourseInfo) !== 0) {
             foreach ($studentCourseInfo as $course) {
@@ -114,6 +115,9 @@ class Student extends Model
                 $gradeBeforeReduction += $course->grades['grade_before_reduction'];
                 $maxGrade += $course->grades['max_current'];
                 $predict += $course->grades['predict'];
+                if(count($course->grades['mit_circs'])){
+                    $mitCircs = true;
+                }
             }
             $attendance = $attendance / count($studentCourseInfo);
             $attendance = round($attendance, 2);
@@ -144,6 +148,7 @@ class Student extends Model
             'engagement' => $engagement,
             'grade_reduced' => $reduced,
             'grade_before_reduction' => $gradeBeforeReduction,
+            'mit_circs' => $mitCircs,
         ];
     }
 }
