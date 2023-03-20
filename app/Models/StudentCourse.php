@@ -119,34 +119,50 @@ class StudentCourse extends Model
 
             if(str_contains($assignment->type, '_s')){
                 $weightSummative += $assignment->engagement_weight;
+
+                // Check mit circs
+                $c3 = StudentAssignmentMitCirc::where([['student_assignment', $assignmentByStudent[0]->id],['mit_circ', "1"]])->get();
+                if($c3->count() > 0) {
+                    array_push($mitCircs, 'C3 - Late penalty for one or more assignment has been removed');
+                } 
+                $c7 = StudentAssignmentMitCirc::where([['student_assignment', $assignmentByStudent[0]->id],['mit_circ', "2"]])->get();
+                if($c7->count() > 0) {
+                    array_push($mitCircs, 'C7 - One or more assignment is ignored for grade calculation');
+                }
+
                 if($assignmentByStudent[0]->grade===null){
-                    $grade += 0;
-                    $grade_no_reduction += 0;
-                    array_push($upcoming, $assignment);
+                    if($c7->count() > 0) {
+                        $grade += $assignment->engagement_weight;
+                        $grade_no_reduction += $assignment->engagement_weight;
+                        $maxWeightSummative += $assignment->engagement_weight;
+                    } else {
+                        $grade += 0;
+                        $grade_no_reduction += 0;
+                        array_push($upcoming, $assignment);
+                    }
                 } else {
                     $maxWeightSummative += $assignment->engagement_weight;
-
-                    $gradeTemp = $assignmentByStudent[0]->grade;
-                    $submit = new Carbon($assignmentByStudent[0]->date_submitted);
-                    $due = new Carbon($assignment->due_date);
-                    $grade_no_reduction += $gradeTemp * $assignment->engagement_weight;
-                    if($submit > $due){
-                        // check for c3 mit circ
-                        // $c3 = StudentAssignmentMitCirc::where('student_assignment', $assignmentByStudent[0]->id)->where('mit_circ', 1)->get();
-                        // if($c3) {
-                        //     array_push($mitCircs, 'C3 - Remove late penalty');
-                        // } else {
-                            $reduced = true;
-                            $diffDays = abs($due->diffInDays($submit)); 
-                
-                            $gradeTemp = ($gradeTemp) - ($gradeTemp * (($diffDays*10)/100));
-                            if($gradeTemp < 0) {
-                                $gradeTemp = 0;
-                            }
-                        // }
-                    }
-                    $grade += $gradeTemp * $assignment->engagement_weight;
+                    if($c7->count() > 0) {
+                        $grade += $assignment->engagement_weight;
+                        $grade_no_reduction += $assignment->engagement_weight;
+                    } else {
+                        $gradeTemp = $assignmentByStudent[0]->grade;
+                        $submit = new Carbon($assignmentByStudent[0]->date_submitted);
+                        $due = new Carbon($assignment->due_date);
+                        $grade_no_reduction += $gradeTemp * $assignment->engagement_weight;
+                        if($submit > $due){
+                            if($c3->count() <= 0) {
+                                $reduced = true;
+                                $diffDays = abs($due->diffInDays($submit)); 
                     
+                                $gradeTemp = ($gradeTemp) - ($gradeTemp * (($diffDays*10)/100));
+                                if($gradeTemp < 0) {
+                                    $gradeTemp = 0;
+                                }
+                            }
+                        }
+                        $grade += $gradeTemp * $assignment->engagement_weight;
+                    }
                 }
             }
 
@@ -192,7 +208,7 @@ class StudentCourse extends Model
             'max_current' => $maxCurrentGrade,
             'grade_reduced' => $reduced,
             'grade_before_reduction' => $grade_no_reduction,
-            'mit_circs' => $c3
+            'mit_circs' => $mitCircs
         ];
     }
 

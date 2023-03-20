@@ -224,6 +224,20 @@ class TutorController extends Controller
             $student->studentCourse = StudentCourse::where([['student', $student->id, ], ['course', $courseId]])->get();
             $student->courseActivity = StudentActivity::join('activity', 'student_activity.activity', '=', 'activity.id')->where([['student', $student->id, ], ['activity.course', $courseId]])->get();
             $student->courseAssignments = StudentAssignment::join('assignment', 'student_assignment.assignment', '=', 'assignment.id')->where([['student', $student->id, ], ['assignment.course', $courseId]])->get();
+            foreach ($student->courseAssignments as $assignment) {
+                $sId = $student->id;
+                $aId = $assignment->id;
+                $studentAssignment = StudentAssignment::where([
+                    ['student', $sId],
+                    ['assignment', $aId]
+                ])->get();
+                $samc = StudentAssignmentMitCirc::where('student_assignment', $studentAssignment[0]->id)->get();
+                $mitCircList = [];
+                foreach ($samc as $a) {
+                 array_push($mitCircList, MitCirc::where('id', $a->mit_circ)->get()[0]);
+                }
+                $assignment->mitcircs = $mitCircList;
+             }
         }
 
         $distribution = [];
