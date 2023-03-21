@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MitCirc;
 use App\Models\Student;
+use App\Models\StudentAssignment;
+use App\Models\StudentAssignmentMitCirc;
 use App\Models\Tutor;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -44,6 +47,19 @@ class StudentController extends Controller
         $studentId = $request->student;
         $userId = $request->user;
         $student = Student::where('id', $studentId)->with('user', 'studentCourse.course', 'studentActivity.activity', 'studentAssignment.assignment', 'studentLast', 'concerns', 'personal_tutor.user')->first();
+        foreach ($student->studentAssignment as $assignment) {
+            $aId = $assignment->assignment;
+            $studentAssignment = StudentAssignment::where([
+                ['student', $studentId],
+                ['assignment', $aId]
+            ])->get();
+            $samc = StudentAssignmentMitCirc::where('student_assignment', $studentAssignment[0]->id)->get();
+            $mitCircList = [];
+            foreach ($samc as $a) {
+                array_push($mitCircList, MitCirc::where('id', $a->mit_circ)->get()[0]);
+            }
+            $assignment->mitcircs = $mitCircList;
+        }
 
         return response(['student' => $student]);
     }
