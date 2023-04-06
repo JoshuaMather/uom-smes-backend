@@ -262,5 +262,29 @@ class updateTable extends Command
         //     }
         // }
 
+        // reduce attendance for some students
+        // $activities = StudentActivity::where('student', 13)->get();
+        // foreach ($activities as $activity) {
+        //     $chance = rand(0,100);
+        //     if($chance > 10) {
+        //         $activity->attended = 0; 
+        //         $activity->save();
+        //     }
+        // }
+
+        // adjust date submitted
+        // $assignments = StudentAssignment::all();
+        // foreach ($assignments as $assignment) {
+        //     if($assignment->date_submitted){
+        //         $submit = Carbon::create($assignment->date_submitted);
+        //         $hours = rand(1,24);
+        //         $minutes = rand(1,60);
+        //         $time = $submit->subHours($hours);
+        //         $time = $time->subMinutes($minutes);
+        //         $assignment->date_submitted = $time;
+        //         $assignment->save();
+        //     }
+        // }
+
     }
 }
